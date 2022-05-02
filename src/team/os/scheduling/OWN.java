@@ -10,16 +10,7 @@ import team.os.model.History;
 import team.os.model.Process;
 
 public class OWN implements Scheduler{
-
-	@Override
-<<<<<<< Updated upstream
-=======
-<<<<<<< Updated upstream
-	public History schedule(List<Process> mProcessList, List<Core> mCoreList) {
-		// TODO Auto-generated method stub
-		return null;
-=======
->>>>>>> Stashed changes
+		
 	public History schedule(List<Process> processList, List<Core> coreList) {
 
 		double totalPowerConsumption = 0;
@@ -83,11 +74,7 @@ public class OWN implements Scheduler{
 				if((coreIndex = process.getWorkingCoreIndex()) == -1) {
 
 					// 코어를 추천받는다.
-<<<<<<< Updated upstream
-					coreIndex = CPU.getRecommendCore(coreList, priorityType);
-=======
 					coreIndex = CPU.getRecommendCore(coreList);
->>>>>>> Stashed changes
 
 				} else {
 
@@ -114,11 +101,7 @@ public class OWN implements Scheduler{
 				System.out.printf("%s -> %d - %d = ", process.getpId(), process.getRemainBurstTime(), core.getPower());
 
 				// 프로세스의 남은 작업 시간을 코어의 파워만큼 감소한다.
-<<<<<<< Updated upstream
-				process.decreaseRemainBurstTime(core.getPower());
-=======
 				process.setRemainBurstTime(process.getRemainBurstTime() - core.getPower());
->>>>>>> Stashed changes
 
 
 				System.out.println(process.getRemainBurstTime());
@@ -127,21 +110,18 @@ public class OWN implements Scheduler{
 				if(process.getRemainBurstTime() <= 0) {
 
 					// 시간 정보를 기록한다.
-<<<<<<< Updated upstream
-					process.setTurnaroundTime(totalBurstTime - process.getArrivalTime());
-					process.setWaitingTime(process.getTurnaroundTime() - process.getBurstTime());
-					process.setNomalizedTT((double) process.getTurnaroundTime() / process.getBurstTime());
-
-					// 프로세스를 종료한다. 
-					process.terminate();
-=======
 					process.setTurnAroundTime(totalBurstTime - process.getArrivalTime());
 					process.setWaitingTime(process.getTurnAroundTime() - process.getBurstTime());
 					process.setNormalizedTT((double) process.getTurnAroundTime() / process.getBurstTime());
 
 					// 프로세스를 종료한다. 
 					process.setTerminated(true);
->>>>>>> Stashed changes
+					process.setTurnAroundTime(totalBurstTime - process.getArrivalTime());
+					process.setWaitingTime(process.getTurnAroundTime() - process.getBurstTime());
+					process.setNormalizedTT((double) process.getTurnAroundTime() / process.getBurstTime());
+
+					// 프로세스를 종료한다. 
+					process.setTerminated(true);
 
 					System.out.printf("%s is terminated.\n", process.getpId());
 
@@ -184,11 +164,7 @@ public class OWN implements Scheduler{
 		history.setTotalPowerConsumption(totalPowerConsumption);
 
 		return history;
-
-<<<<<<< Updated upstream
-=======
->>>>>>> Stashed changes
->>>>>>> Stashed changes
+		
 	}
 
 }
