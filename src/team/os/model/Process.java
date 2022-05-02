@@ -1,19 +1,31 @@
 package team.os.model;
 
-public class Process {
+public class Process implements Comparable<Object> {
+	
 	private int pId;
 	private int arrivalTime;
 	private int burstTime;
 	private int waitingTime = 0;
 	private int turnAroundTime = 0;
 	private int normalizedTime = 0;
-	private int workedCoreIndex = -1;
+	private int workingCoreIndex = -1;
+	private boolean terminated = false;
 	
 	public Process(int pId, int arrivalTime, int burstTime){
 		this.pId = pId;
 		this.arrivalTime = arrivalTime;
 		this.burstTime = burstTime;
 	}
+	
+	public boolean isTerminated() {
+		return terminated;
+	}
+
+	public void setTerminated(boolean terminated) {
+		this.terminated = terminated;
+	}
+
+	
 
 	public int getpId() {
 		return pId;
@@ -63,11 +75,22 @@ public class Process {
 		this.normalizedTime = normalizedTime;
 	}
 
-	public int getWorkedCoreIndex() {
-		return workedCoreIndex;
+	public int getWorkingCoreIndex() {
+		return workingCoreIndex;
 	}
 
-	public void setWorkedCoreIndex(int workedCoreIndex) {
-		this.workedCoreIndex = workedCoreIndex;
+	public void setWorkingCoreIndex(int workedCoreIndex) {
+		this.workingCoreIndex = workedCoreIndex;
+	}
+
+	@Override
+	public int compareTo(Object o) {
+
+		int time = arrivalTime - ((Process) o).arrivalTime;
+
+		if(time > 0) return 1;
+		else if(time < 0) return -1;
+		else return 0;
+		
 	}	
 }
