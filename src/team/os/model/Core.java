@@ -7,7 +7,16 @@ public abstract class Core {
 	private int power;
 	// 누적 전력 소모량
 	private int accConsumption = 0;
+	// 일하고 있는지 여부
+	private boolean working = false;
 	
+	
+	public boolean isWorking() {
+		return working;
+	}
+	public void setWorking(boolean working) {
+		this.working = working;
+	}
 	public int getPowerConsumption() {
 		return powerConsumption;
 	}
