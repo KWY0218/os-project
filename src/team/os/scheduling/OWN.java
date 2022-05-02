@@ -10,7 +10,7 @@ import team.os.model.History;
 import team.os.model.Process;
 
 public class OWN implements Scheduler{
-		
+
 	public History schedule(List<Process> processList, List<Core> coreList) {
 
 		double totalPowerConsumption = 0;
@@ -19,25 +19,21 @@ public class OWN implements Scheduler{
 		// 히스토리를 생성한다.
 		History history = new History();
 
-		// 프로세스 리스트를 큐로 복사한다.
-		// Queue<Process> readyQueue = new LinkedList<Process>(processList);
+		// Ready Queue를 준비한다.
 		Queue<Process> readyQueue = new LinkedList<Process>();
 
 		// 모든 프로세스가 끝나지 않았다면
-		// while(!CPU.isTerminatedAllProcess(readyQueue)) {
 		while(!CPU.isTerminatedAllProcess(processList)) {
 
-			// 수행 시간을 1초 증가한다.
-			totalBurstTime++;
-
-			System.out.printf("Total Burst Time: %d\n", totalBurstTime);
-
-			// Arrival Time에 도달한 프로세스를 Ready Queue에 추가한다.
+			// Arrival Time이 도래한 프로세스를 Ready Queue에 추가한다.
 			for(Process process : processList)
-				
+
 				if(process.getArrivalTime() == totalBurstTime)
-					
+
 					readyQueue.offer(process);
+
+			// 수행 시간을 1초 증가한다.
+			System.out.printf("Total Burst Time: %d\n", totalBurstTime++);
 
 			// 큐가 변하기 때문에 크기를 미리 저장한다.
 			int processQueueSize = readyQueue.size();
@@ -46,7 +42,7 @@ public class OWN implements Scheduler{
 
 			for(Process process : readyQueue)
 
-				System.out.printf("%s, ", process.getpId());
+				System.out.printf("P%d, ", process.getpId());
 
 			System.out.println("}");
 
@@ -78,7 +74,7 @@ public class OWN implements Scheduler{
 
 				} else {
 
-					System.out.printf("Process %s have Core %d.\n", process.getpId(), coreIndex);
+					System.out.printf("Process P%d have Core %d.\n", process.getpId(), coreIndex);
 
 				}
 
@@ -96,9 +92,9 @@ public class OWN implements Scheduler{
 
 				// 프로세스에 코어 인덱스를 입력한다.
 				process.setWorkingCoreIndex(coreIndex);
-				System.out.printf("Process %s got Core %d.\n", process.getpId(), coreIndex);
+				System.out.printf("Process P%d got Core %d.\n", process.getpId(), coreIndex);
 
-				System.out.printf("%s -> %d - %d = ", process.getpId(), process.getRemainBurstTime(), core.getPower());
+				System.out.printf("P%d -> %d - %d = ", process.getpId(), process.getRemainBurstTime(), core.getPower());
 
 				// 프로세스의 남은 작업 시간을 코어의 파워만큼 감소한다.
 				process.setRemainBurstTime(process.getRemainBurstTime() - core.getPower());
@@ -123,7 +119,7 @@ public class OWN implements Scheduler{
 					// 프로세스를 종료한다. 
 					process.setTerminated(true);
 
-					System.out.printf("%s is terminated.\n", process.getpId());
+					System.out.printf("P%d is terminated.\n", process.getpId());
 
 				}
 
@@ -133,7 +129,7 @@ public class OWN implements Scheduler{
 					// 프로세스를 큐에 삽입한다.
 					readyQueue.offer(process);
 
-					System.out.printf("%s is offered.\n", process.getpId());
+					System.out.printf("P%d is offered.\n", process.getpId());
 
 				}
 
@@ -155,16 +151,12 @@ public class OWN implements Scheduler{
 		System.out.printf("Total Burst Time: %d\n", totalBurstTime);
 		System.out.printf("Total Power Consumption: %.1f\n\n", totalPowerConsumption);
 
-		for(Process process : processList)
-
-			System.out.println(process);
-
 		// 히스토리에 시간 및 전력정보를 대입한다.
 		history.setTotalBurstTime(totalBurstTime);
 		history.setTotalPowerConsumption(totalPowerConsumption);
 
 		return history;
-		
+
 	}
 
 }
