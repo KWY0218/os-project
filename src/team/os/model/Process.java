@@ -5,6 +5,7 @@ public class Process implements Comparable<Object> {
 	private int pId;
 	private int arrivalTime;
 	private int burstTime;
+	private int remainBurstTime;
 	private int waitingTime = 0;
 	private int turnAroundTime = 0;
 	private int normalizedTime = 0;
@@ -15,6 +16,15 @@ public class Process implements Comparable<Object> {
 		this.pId = pId;
 		this.arrivalTime = arrivalTime;
 		this.burstTime = burstTime;
+		this.remainBurstTime = burstTime;
+	}
+	
+	public int getRemainBurstTime() {
+		return remainBurstTime;
+	}
+
+	public void setRemainBurstTime(int remainBurstTime) {
+		this.remainBurstTime = remainBurstTime;
 	}
 	
 	public boolean isTerminated() {
@@ -24,8 +34,6 @@ public class Process implements Comparable<Object> {
 	public void setTerminated(boolean terminated) {
 		this.terminated = terminated;
 	}
-
-	
 
 	public int getpId() {
 		return pId;
