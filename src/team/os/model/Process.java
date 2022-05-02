@@ -8,7 +8,7 @@ public class Process implements Comparable<Object> {
 	private int remainBurstTime;
 	private int waitingTime = 0;
 	private int turnAroundTime = 0;
-	private int normalizedTime = 0;
+	private double normalizedTT = 0;
 	private int workingCoreIndex = -1;
 	private boolean terminated = false;
 	
@@ -75,12 +75,12 @@ public class Process implements Comparable<Object> {
 		this.turnAroundTime = turnAroundTime;
 	}
 
-	public int getNormalizedTime() {
-		return normalizedTime;
+	public double getNormalizedTT() {
+		return normalizedTT;
 	}
 
-	public void setNormalizedTime(int normalizedTime) {
-		this.normalizedTime = normalizedTime;
+	public void setNormalizedTT(double normalizedTT) {
+		this.normalizedTT = normalizedTT;
 	}
 
 	public int getWorkingCoreIndex() {
