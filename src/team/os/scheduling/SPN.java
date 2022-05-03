@@ -24,7 +24,7 @@ public class SPN  implements Scheduler{
 	@Override
 	public History schedule(List<Process> mProcessList, List<Core> mCoreList) {
 		History history = new History();
-		int currentTime = 1;
+		int currentTime = 0;
 		double totalAccConsumption= 0;
 		List<Process> readyList = new LinkedList<>();
 		
@@ -78,7 +78,7 @@ public class SPN  implements Scheduler{
 						// 6. 프로세스가 종료 됐음을 명시하고, 일이 끝난 프로세스의 TT, NTT를 설정한다.
 						process.setTerminated(true);
 						process.setTurnAroundTime(currentTime-process.getArrivalTime());
-						process.setNormalizedTT(process.getTurnAroundTime()/process.getArrivalTime());
+						process.setNormalizedTT(process.getTurnAroundTime()/process.getBurstTime());
 					}
 				}
 			}

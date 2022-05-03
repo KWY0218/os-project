@@ -16,14 +16,14 @@ public class TestSPN {
 	 */
 	public static void main(String[] args) {
 		List<Process> processList = new LinkedList<>();
-		processList.add(new Process(0,1,4));
-		processList.add(new Process(1,1,2));
-		processList.add(new Process(2,2,6));
-		processList.add(new Process(3,2,1));
-		processList.add(new Process(4,3,7));
-		processList.add(new Process(5,3,2));
-		processList.add(new Process(6,4,1));
-		processList.add(new Process(7,4,9));
+		processList.add(new Process(0,0,4));
+		processList.add(new Process(1,0,2));
+		processList.add(new Process(2,1,6));
+		processList.add(new Process(3,1,1));
+		processList.add(new Process(4,2,7));
+		processList.add(new Process(5,2,2));
+		processList.add(new Process(6,3,1));
+		processList.add(new Process(7,3,9));
 		
 		List<Core> coreList = new LinkedList<Core>();
 		coreList.add(new PCore());
