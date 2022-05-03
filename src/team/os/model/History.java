@@ -18,7 +18,7 @@ public class History {
 
 	}
 
-	public void addPage(List<Process> mProcessList, Queue<Process> mReadyQueue) {
+	public void addPage(List<Process> mProcessList, List<Process> mReadyQueue) {
 
 		List<Process> processList = new ArrayList<Process>();
 
