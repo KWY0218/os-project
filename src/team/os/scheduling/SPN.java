@@ -24,7 +24,8 @@ public class SPN  implements Scheduler{
 	@Override
 	public History schedule(List<Process> mProcessList, List<Core> mCoreList) {
 		History history = new History();
-		int currentTime = 0;
+		int currentTime = 1;
+		double totalAccConsumption= 0;
 		List<Process> readyList = new LinkedList<>();
 		
 		// 1. 모든 프로세스가 끝날 때까지 반복
@@ -55,8 +56,8 @@ public class SPN  implements Scheduler{
 			}
 			
 			// 5. 코어 할당이 끝난 후 일하고 있는 코어의 누적 전력량을 갱신한다. cpu 에서 새로 만든 함수임
-			CPU.setPowerConsumptionOfCoreList(mCoreList);
-			CPU.setStandbyPowerOfCoreList(mCoreList);
+			totalAccConsumption += CPU.getPowerConsumptionOfCoreList(mCoreList);
+			totalAccConsumption += CPU.getStandbyPowerOfCoreList(mCoreList);
 			
 			// 6. 코어를 할당받은 프로세스들을 일시킨다.
 			for(Process process:mProcessList) {
@@ -87,6 +88,8 @@ public class SPN  implements Scheduler{
 			// 8. 1초 시간을 증가한다.
 			currentTime++;
 		}
+		history.setTotalBurstTime(currentTime);
+		history.setTotalPowerConsumption(totalAccConsumption);
 		return history;
 	}
 }

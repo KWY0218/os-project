@@ -18,12 +18,12 @@ public class TestSPN {
 		List<Process> processList = new LinkedList<>();
 		processList.add(new Process(0,1,4));
 		processList.add(new Process(1,1,2));
-		processList.add(new Process(2,1,6));
-		processList.add(new Process(3,1,1));
-		processList.add(new Process(4,1,7));
-		processList.add(new Process(5,1,2));
-		processList.add(new Process(6,1,1));
-		processList.add(new Process(7,1,9));
+		processList.add(new Process(2,2,6));
+		processList.add(new Process(3,2,1));
+		processList.add(new Process(4,3,7));
+		processList.add(new Process(5,3,2));
+		processList.add(new Process(6,4,1));
+		processList.add(new Process(7,4,9));
 		
 		List<Core> coreList = new LinkedList<Core>();
 		coreList.add(new PCore());

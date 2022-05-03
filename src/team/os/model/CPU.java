@@ -25,10 +25,9 @@ public class CPU {
 
 			if(core.isWorking())
 
-				powerConsumption =+ core.getPowerConsumption();
+				powerConsumption += core.getPowerConsumption();
 
 		return powerConsumption;
-
 	}
 
 	/**
@@ -50,28 +49,6 @@ public class CPU {
 
 	}
 	
-	/*
-	 * 일하고 있는 코어의 누적 전력량을 증가한다. 
-	 */
-	public static void setPowerConsumptionOfCoreList(List<Core> coreList) {
-		for(Core core : coreList)
-
-			if(core.isWorking())
-
-				core.setAccConsumption(core.getAccConsumption()+core.getPowerConsumption());
-	}
-
-	/*
-	 * 대기하고 있는 코어의 누적 전력량을 증가한다. 
-	 */
-	public static void setStandbyPowerOfCoreList(List<Core> coreList) {
-		for(Core core : coreList)
-
-			if(!core.isWorking())
-
-				core.setAccConsumption(core.getAccConsumption()+0.1);
-	}
-
 	/**
 	 * @param coreList
 	 * @param schedulingType
