@@ -10,7 +10,6 @@ public abstract class Core {
 	// 일하고 있는지 여부
 	private boolean working = false;
 	
-	
 	public boolean isWorking() {
 		return working;
 	}

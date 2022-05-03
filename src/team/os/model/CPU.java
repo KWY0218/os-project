@@ -25,10 +25,9 @@ public class CPU {
 
 			if(core.isWorking())
 
-				powerConsumption =+ core.getPowerConsumption();
+				powerConsumption += core.getPowerConsumption();
 
 		return powerConsumption;
-
 	}
 
 	/**
@@ -49,7 +48,7 @@ public class CPU {
 		return standbyPower;
 
 	}
-
+	
 	/**
 	 * @param coreList
 	 * @param schedulingType
