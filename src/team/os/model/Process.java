@@ -12,6 +12,9 @@ public class Process implements Comparable<Object> {
 	private int workingCoreIndex = -1;
 	private boolean terminated = false;
 	
+	/* 라운드 로빈 적용 시, 현재 차례에서 일한 시간 */
+	private int workingTimeOfTurn = 0;
+	
 	public Process(int pId, int arrivalTime, int burstTime){
 		this.pId = pId;
 		this.arrivalTime = arrivalTime;
@@ -19,6 +22,14 @@ public class Process implements Comparable<Object> {
 		this.remainBurstTime = burstTime;
 	}
 	
+	public int getWorkingTimeOfTurn() {
+		return workingTimeOfTurn;
+	}
+
+	public void setWorkingTimeOfTurn(int workingTimeOfTurn) {
+		this.workingTimeOfTurn = workingTimeOfTurn;
+	}
+
 	public int getRemainBurstTime() {
 		return remainBurstTime;
 	}
