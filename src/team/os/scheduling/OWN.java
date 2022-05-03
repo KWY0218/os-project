@@ -65,11 +65,23 @@ public class OWN implements Scheduler{
 			// 큐에 저장된 만큼 반복한다.
 			for(int processIndex = 0; processIndex < processQueueSize; processIndex++) {
 
-				// 코어 인덱스를 초기화한다.
-				int coreIndex = -1;
+				// timeQuantum = (Total BurstTime of Processes in ReadyQueue) / (Size of ReadyQueue)
+				int timeQuantum = 0;
+
+				// Time Quantum을 설정한다.
+				for(Process tProcess : readyQueue)
+
+					timeQuantum += tProcess.getRemainBurstTime();
+
+				timeQuantum /= readyQueue.size();
+
+				System.out.printf("timeQuantum = %d --------------\n", timeQuantum);
 
 				// 큐에서 프로세스를 선택한다.
 				Process process = readyQueue.poll();
+
+				// 코어 인덱스를 초기화한다.
+				int coreIndex = -1;
 
 				// 프로세스에 할당된 코어가 없다면
 				if((coreIndex = process.getWorkingCoreIndex()) == -1) {
@@ -103,7 +115,6 @@ public class OWN implements Scheduler{
 
 				// 프로세스의 남은 작업 시간을 코어의 파워만큼 감소한다.
 				process.setRemainBurstTime(process.getRemainBurstTime() - core.getPower());
-
 
 				System.out.println(process.getRemainBurstTime());
 
@@ -163,7 +174,7 @@ public class OWN implements Scheduler{
 		return history;
 
 	}
-	
+
 	public static void main(String[] args) {
 
 		// 프로세스 리스트를 생성한다.
@@ -190,29 +201,29 @@ public class OWN implements Scheduler{
 			}
 
 		// 예제 프로세스 및 코어
-//		processList.clear();
-//		processList.add(new Process(1, 0, 3));
-//		processList.add(new Process(2, 1, 7));
-//		processList.add(new Process(3, 3, 2));
-//		processList.add(new Process(4, 5, 5));
-//		processList.add(new Process(5, 6, 3));
+		processList.clear();
+		processList.add(new Process(1, 0, 3));
+		processList.add(new Process(2, 1, 7));
+		processList.add(new Process(3, 3, 2));
+		processList.add(new Process(4, 5, 5));
+		processList.add(new Process(5, 6, 3));
 
-//		coreList.clear();
-//		coreList.add(new ECore());
+		coreList.clear();
+		coreList.add(new ECore());
 
 		// 프로세스 및 코어 리스트를 출력한다.
 		History history = new OWN().schedule(processList, coreList);
 
 		System.out.println("-------- Core --------");
-		
+
 		for(Core core : coreList)
-			
+
 			System.out.printf("%s\n", core.getClass().getName());
-		
+
 		System.out.println("-------- Process --------");
-		
+
 		for(Process process : processList)
-			
+
 			System.out.printf("P%02d\t%2d\t%2d\n", process.getpId(), process.getArrivalTime(), process.getBurstTime());
 
 		// 히스토리 테스트
@@ -233,7 +244,7 @@ public class OWN implements Scheduler{
 			for(List<Process> pl : history.getHistory()) {
 
 				boolean worked = false;
-				
+
 				for(Process p : pl)
 
 					if(p.getWorkingCoreIndex() == coreIndex) {
@@ -241,13 +252,13 @@ public class OWN implements Scheduler{
 						System.out.printf("%5d", p.getpId());
 
 						worked = true;
-						
+
 					}
-				
+
 				if(!worked)
-					
+
 					System.out.printf("     ");
-				
+
 			}
 
 			System.out.println();
