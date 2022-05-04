@@ -46,16 +46,15 @@ public class SPN  implements Scheduler{
 				// 4. readyList 에서 BT가 가장 짧은 프로세스 
 				Process currentProcess = readyList.get(0);
 				
-				// 4. 코어를 할당 받은 프로세스의 할당 받은 코어의 인덱스를 설정하고, waitingTime을 설정하고, working 중인 것을 명시한다. 
+				// 4. 코어를 할당 받은 프로세스의 할당 받은 코어의 인덱스를 설정하고,  working 중인 것을 명시한다. 
 				mProcessList.get(currentProcess.getpId()).setWorkingCoreIndex(coreIndex);
-				mProcessList.get(currentProcess.getpId()).setWaitingTime(currentTime-mProcessList.get(currentProcess.getpId()).getArrivalTime());
 				mCoreList.get(coreIndex).setWorking(true);
 				
 				// 4. 코어를 할당 받은 readyList 맨 앞 요소를 제거한다.
 				readyList.remove(0);
 			}
 			
-			// 5. 코어 할당이 끝난 후 일하고 있는 코어의 누적 전력량을 갱신한다. cpu 에서 새로 만든 함수임
+			// 5. 코어 할당이 끝난 후 일하고 있는 코어의 누적 전력량을 갱신한다.
 			totalAccConsumption += CPU.getPowerConsumptionOfCoreList(mCoreList);
 			totalAccConsumption += CPU.getStandbyPowerOfCoreList(mCoreList);
 			
@@ -75,9 +74,10 @@ public class SPN  implements Scheduler{
 						// 6. 이 프로세스는 일을 다했다고 설정한다.
 						process.setWorkingCoreIndex(-1);
 						
-						// 6. 프로세스가 종료 됐음을 명시하고, 일이 끝난 프로세스의 TT, NTT를 설정한다.
+						// 6. 프로세스가 종료 됐음을 명시하고, 일이 끝난 프로세스의 TT, WT, NTT를 설정한다.
 						process.setTerminated(true);
 						process.setTurnAroundTime(currentTime-process.getArrivalTime());
+						process.setWaitingTime(process.getTurnAroundTime()-process.getBurstTime());
 						process.setNormalizedTT(process.getTurnAroundTime()/process.getBurstTime());
 					}
 				}
