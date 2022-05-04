@@ -15,6 +15,13 @@ public class Process implements Comparable<Object> {
 	/* 라운드 로빈 적용 시, 현재 차례에서 일한 시간 */
 	private int workingTimeOfTurn = 0;
 	
+	/* HRRN 때 사용 
+	 * age : assignWaitingTime/burstTime 
+	 * assignWaitingTime : readyList 안에 있는 시간
+	 */
+	private double age = 0;
+	private int assignWaitingTime = 0;
+	
 	public Process(int pId, int arrivalTime, int burstTime){
 		this.pId = pId;
 		this.arrivalTime = arrivalTime;
@@ -100,6 +107,21 @@ public class Process implements Comparable<Object> {
 
 	public void setWorkingCoreIndex(int workedCoreIndex) {
 		this.workingCoreIndex = workedCoreIndex;
+	}
+	
+	/*
+	 * 정렬이 오름차순이므로 -를 붙임 
+	 */
+	public double getAge() {
+		return -age;
+	}
+
+	/*
+	 *	readyList에 있던 시간을 늘리고, age를 계산한다. 
+	 */
+	public void setAssignWaitingTime() {
+		assignWaitingTime++;
+		age = assignWaitingTime/burstTime;
 	}
 
 	@Override
