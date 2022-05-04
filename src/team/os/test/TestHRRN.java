@@ -7,13 +7,10 @@ import team.os.model.Core;
 import team.os.model.ECore;
 import team.os.model.PCore;
 import team.os.model.Process;
-import team.os.scheduling.SPN;
+import team.os.scheduling.HRRN;
 
-public class TestSPN {
+public class TestHRRN {
 
-	/*
-	 *	시간은 1초부터 넣어야함, 0 넣으면 바로 에러 뜸 ㅠㅠ
-	 */
 	public static void main(String[] args) {
 		List<Process> processList = new LinkedList<>();
 		processList.add(new Process(0,0,3));
@@ -25,7 +22,7 @@ public class TestSPN {
 		List<Core> coreList = new LinkedList<Core>();
 		coreList.add(new ECore());
 	
-		new SPN().schedule(processList, coreList);
+		new HRRN().schedule(processList, coreList);
 	}
 
 }
