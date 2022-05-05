@@ -56,9 +56,6 @@ public class SRTN  implements Scheduler{
 			// 5. 코어가 남아있고 && readyList 안에 프로세스가 있다면 readyList 맨 앞에 있는 프로세스에 코어를 할당한다. 둘 중 하나가 false가 나올 때 까지 반복한다.
 			while(CPU.getRecommendCore(mCoreList,CPU.priorityType) != -1 && !readyList.isEmpty()) {
 				
-				// 5. readyList 에서 reaminBT가 가장 짧은 프로세스 
-				Process currentProcess = readyList.get(0);
-				
 				// 5. 코어가 남아있으니 코어를 추천받는다.
 				int coreIndex = CPU.getRecommendCore(mCoreList,CPU.priorityType);
 				
@@ -73,7 +70,7 @@ public class SRTN  implements Scheduler{
 			// 6. 코어가 가득 차있고, readyList에 프로세스가 있으면 remainBT를 계산해서 선점을 한다.
 			while(!readyList.isEmpty()) {
 				// 6. 코어 안에 있는 값 중 remainBT 가 가장 큰 프로세스를 찾는다.
-				Process maxProcess = mProcessList.get(0);
+				Process maxProcess = new Process(-1,-1,-1);
 				
 				for(Process process:mProcessList) {
 					if(process.getWorkingCoreIndex() != -1) {
@@ -81,7 +78,7 @@ public class SRTN  implements Scheduler{
 							maxProcess = process;
 					}
 				}
-				
+				if(maxProcess.getpId()!=-1) {
 				// 6. readyList 최상단에 있는 프로세스의 remainBT와 방금 코어에서 찾은 최대 프로세스의 remainBT를 비교한다.
 				if(maxProcess.getRemainBurstTime()>readyList.get(0).getRemainBurstTime()) {
 					// 6. 코어에서 찾은 프로세스의 BT가 더 크면, 해당 프로세스의 코어 인덱스를 readyList 최상단에 있는 프로세스에게 할당한다.
@@ -102,6 +99,7 @@ public class SRTN  implements Scheduler{
 					// 6. 코어로 들어간 프로세스의 정보를 readyList 에서 없앤다.
 					readyList.remove(0);	
 				} else break;
+				}
 			}
 			
 			// 7. 다시 readyList를 remainBT 순으로 정렬한다.
