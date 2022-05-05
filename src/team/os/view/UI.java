@@ -1,31 +1,43 @@
 package team.os.view;
 
+import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Toolkit;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
+import javax.swing.ButtonGroup;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
-
-import com.formdev.flatlaf.FlatDarkLaf;
-
 import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
 
-import java.awt.Color;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JButton;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JRadioButton;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
+import com.formdev.flatlaf.FlatDarkLaf;
+
+import team.os.model.CPU;
+import team.os.model.Core;
+import team.os.model.ECore;
+import team.os.model.History;
+import team.os.model.PCore;
+import team.os.model.Process;
+import team.os.scheduling.FCFS;
+import team.os.scheduling.HRRN;
+import team.os.scheduling.OWN;
+import team.os.scheduling.RR;
+import team.os.scheduling.SPN;
+import team.os.scheduling.SRTN;
 
 @SuppressWarnings("serial")
 public class UI extends JFrame {
@@ -46,14 +58,11 @@ public class UI extends JFrame {
 	private JPanel panel_1;
 	private JLabel lblNewLabel_5;
 	private JScrollPane scrollPane;
-	private JLabel lblPCores;
-	private JLabel lblPCores_1;
 	private JLabel lblPCores_2;
 	private JTable table;
 	private JLabel lblNewLabel_6;
 	private JLabel lblNewLabel_7;
 	private JLabel lblNewLabel_8;
-	private JLabel lblNewLabel_9;
 	private JScrollPane scrollPane_1;
 	private JTable table_1;
 	private JScrollPane scrollPane_2;
@@ -62,17 +71,13 @@ public class UI extends JFrame {
 	private JLabel lblTimeQuantum;
 	private JScrollPane scrollPane_3;
 	private JList<String> list_1;
-	private JRadioButton rdbtnNewRadioButton;
-	private JRadioButton rdbtnNewRadioButton_1;
-	private JRadioButton rdbtnNewRadioButton_2;
-	private JRadioButton rdbtnNewRadioButton_3;
-	private JRadioButton rdbtnSrtn;
-	private JRadioButton rdbtnNewRadioButton_5;
-	private JLabel lblW;
-	private JLabel lblW_1;
+	private JRadioButton fcfsRadioButton;
+	private JRadioButton rrRadioButton;
+	private JRadioButton spnRadioButton;
+	private JRadioButton ownRadioButton;
+	private JRadioButton srtnRadioButton;
+	private JRadioButton hrrnRadioButton;
 	private JLabel lblW_2;
-	private JTextField textField;
-	private JTextField textField_1;
 	private JTextField textField_2;
 	private JLabel lblSeconds;
 	private JTextField textField_3;
@@ -86,7 +91,6 @@ public class UI extends JFrame {
 	private JButton btnNewButton_6;
 	private JLabel lblNewLabel_10;
 	private JLabel lblNewLabel_11;
-	private JTextField txtP;
 	private JTextField textField_7;
 	private JTextField textField_8;
 
@@ -138,11 +142,6 @@ public class UI extends JFrame {
 		lblNewLabel_8.setBounds(6, 38, 111, 20);
 		panel_2.add(lblNewLabel_8);
 
-		lblNewLabel_9 = new JLabel("Process Name :");
-		lblNewLabel_9.setHorizontalAlignment(SwingConstants.RIGHT);
-		lblNewLabel_9.setBounds(6, 6, 111, 20);
-		panel_2.add(lblNewLabel_9);
-
 		lblNewLabel_10 = new JLabel("second (s)");
 		lblNewLabel_10.setBounds(242, 38, 64, 20);
 		panel_2.add(lblNewLabel_10);
@@ -150,13 +149,6 @@ public class UI extends JFrame {
 		lblNewLabel_11 = new JLabel("second (s)");
 		lblNewLabel_11.setBounds(242, 70, 64, 20);
 		panel_2.add(lblNewLabel_11);
-
-		txtP = new JTextField();
-		txtP.setText("P");
-		txtP.setHorizontalAlignment(SwingConstants.CENTER);
-		txtP.setColumns(10);
-		txtP.setBounds(129, 6, 177, 26);
-		panel_2.add(txtP);
 
 		textField_7 = new JTextField();
 		textField_7.setText("0");
@@ -166,7 +158,7 @@ public class UI extends JFrame {
 		panel_2.add(textField_7);
 
 		textField_8 = new JTextField();
-		textField_8.setText("0");
+		textField_8.setText("1");
 		textField_8.setHorizontalAlignment(SwingConstants.CENTER);
 		textField_8.setColumns(10);
 		textField_8.setBounds(129, 70, 101, 26);
@@ -178,48 +170,14 @@ public class UI extends JFrame {
 		contentPane.add(panel_5);
 		panel_5.setLayout(null);
 
-		lblPCores = new JLabel("P Core's Power Consumption :");
-		lblPCores.setHorizontalAlignment(SwingConstants.RIGHT);
-		lblPCores.setBounds(6, 6, 192, 20);
-		panel_5.add(lblPCores);
-
-		lblPCores_1 = new JLabel("E Core's Power Consumption :");
-		lblPCores_1.setHorizontalAlignment(SwingConstants.RIGHT);
-		lblPCores_1.setBounds(6, 38, 192, 20);
-		panel_5.add(lblPCores_1);
-
 		lblPCores_2 = new JLabel("Total Power Consumption :");
 		lblPCores_2.setHorizontalAlignment(SwingConstants.RIGHT);
 		lblPCores_2.setBounds(6, 70, 192, 20);
 		panel_5.add(lblPCores_2);
 
-		lblW = new JLabel("W");
-		lblW.setBounds(313, 6, 20, 20);
-		panel_5.add(lblW);
-
-		lblW_1 = new JLabel("W");
-		lblW_1.setBounds(313, 38, 20, 20);
-		panel_5.add(lblW_1);
-
 		lblW_2 = new JLabel("W");
 		lblW_2.setBounds(313, 70, 20, 20);
 		panel_5.add(lblW_2);
-
-		textField = new JTextField();
-		textField.setText("0");
-		textField.setHorizontalAlignment(SwingConstants.CENTER);
-		textField.setEditable(false);
-		textField.setBounds(210, 6, 91, 26);
-		panel_5.add(textField);
-		textField.setColumns(10);
-
-		textField_1 = new JTextField();
-		textField_1.setText("0");
-		textField_1.setHorizontalAlignment(SwingConstants.CENTER);
-		textField_1.setEditable(false);
-		textField_1.setColumns(10);
-		textField_1.setBounds(210, 38, 91, 26);
-		panel_5.add(textField_1);
 
 		textField_2 = new JTextField();
 		textField_2.setText("0");
@@ -244,30 +202,38 @@ public class UI extends JFrame {
 		lblTimeQuantum.setBounds(6, 114, 123, 20);
 		panel_6.add(lblTimeQuantum);
 
-		rdbtnNewRadioButton = new JRadioButton("FCFS");
-		rdbtnNewRadioButton.setSelected(true);
-		rdbtnNewRadioButton.setBounds(6, 6, 135, 24);
-		panel_6.add(rdbtnNewRadioButton);
+		fcfsRadioButton = new JRadioButton("FCFS");
+		fcfsRadioButton.setSelected(true);
+		fcfsRadioButton.setBounds(6, 6, 135, 24);
+		panel_6.add(fcfsRadioButton);
 
-		rdbtnNewRadioButton_1 = new JRadioButton("RR");
-		rdbtnNewRadioButton_1.setBounds(6, 42, 135, 24);
-		panel_6.add(rdbtnNewRadioButton_1);
+		rrRadioButton = new JRadioButton("RR");
+		rrRadioButton.setBounds(6, 42, 135, 24);
+		panel_6.add(rrRadioButton);
 
-		rdbtnNewRadioButton_2 = new JRadioButton("SPN");
-		rdbtnNewRadioButton_2.setBounds(6, 78, 135, 24);
-		panel_6.add(rdbtnNewRadioButton_2);
+		spnRadioButton = new JRadioButton("SPN");
+		spnRadioButton.setBounds(6, 78, 135, 24);
+		panel_6.add(spnRadioButton);
 
-		rdbtnNewRadioButton_3 = new JRadioButton("Own");
-		rdbtnNewRadioButton_3.setBounds(153, 78, 135, 24);
-		panel_6.add(rdbtnNewRadioButton_3);
+		ownRadioButton = new JRadioButton("Own");
+		ownRadioButton.setBounds(153, 78, 135, 24);
+		panel_6.add(ownRadioButton);
 
-		rdbtnSrtn = new JRadioButton("SRTN");
-		rdbtnSrtn.setBounds(153, 6, 135, 24);
-		panel_6.add(rdbtnSrtn);
+		srtnRadioButton = new JRadioButton("SRTN");
+		srtnRadioButton.setBounds(153, 6, 135, 24);
+		panel_6.add(srtnRadioButton);
 
-		rdbtnNewRadioButton_5 = new JRadioButton("HRRN");
-		rdbtnNewRadioButton_5.setBounds(153, 42, 135, 24);
-		panel_6.add(rdbtnNewRadioButton_5);
+		hrrnRadioButton = new JRadioButton("HRRN");
+		hrrnRadioButton.setBounds(153, 42, 135, 24);
+		panel_6.add(hrrnRadioButton);
+
+		ButtonGroup buttonGroup = new ButtonGroup();
+		buttonGroup.add(fcfsRadioButton);
+		buttonGroup.add(rrRadioButton);
+		buttonGroup.add(spnRadioButton);
+		buttonGroup.add(srtnRadioButton);
+		buttonGroup.add(hrrnRadioButton);
+		buttonGroup.add(ownRadioButton);
 
 		lblSeconds = new JLabel("second (s)");
 		lblSeconds.setBounds(257, 114, 64, 20);
@@ -303,7 +269,7 @@ public class UI extends JFrame {
 		addProcessButton = new JButton("Add");
 		addProcessButton.setBounds(10, 608, 151, 26);
 		addProcessButton.addActionListener(e -> {
-			addProcess(txtP, textField_7, textField_7);
+			addProcess(textField_7, textField_8);
 		});
 		contentPane.add(addProcessButton);
 
@@ -360,7 +326,7 @@ public class UI extends JFrame {
 		panel_1.add(lblPCore_1);
 
 		textField_5 = new JTextField();
-		textField_5.setText("0");
+		textField_5.setText("1");
 		textField_5.setHorizontalAlignment(SwingConstants.CENTER);
 		textField_5.setEditable(false);
 		textField_5.setColumns(10);
@@ -445,10 +411,10 @@ public class UI extends JFrame {
 
 			using += Integer.parseInt(field.getText());
 
-		// 타겟 필드의 코어 사용량이 0개 미만이 아니면서, 전체 코어 사용량이 MAX_CORE_SIZE를 초과하지 않을 때
-		// if(now + value >= 0 && using + value <= Simulator.MAX_CORE_SIZE)
+		// 타겟 필드의 코어 사용량이 1개 미만이 아니면서, 전체 코어 사용량이 MAX_CORE_SIZE를 초과하지 않을 때
+		if(now + value >= 0 && using + value <= CPU.MAX_CORE_SIZE && using + value >= 1)
 
-			// targetField.setText(String.valueOf(now + value));
+			targetField.setText(String.valueOf(now + value));
 
 	}
 
@@ -458,17 +424,15 @@ public class UI extends JFrame {
 	 * @param burstTimeField
 	 */
 
-	private void addProcess(JTextField pidField, JTextField arrivalTimeField, JTextField burstTimeField) {
+	private void addProcess(JTextField arrivalTimeField, JTextField burstTimeField) {
 
-		String PID = pidField.getText();
+		String PID = String.format("P%d", table.getRowCount() + 1);
 		int arrivalTime = Integer.parseInt(arrivalTimeField.getText());
 		int burstTime = Integer.parseInt(burstTimeField.getText());
 
 		DefaultTableModel model = (DefaultTableModel) table.getModel();
 		model.setColumnIdentifiers(new String[] {"PID", "Arrival Time", "Burst Time"});
 		model.addRow(new Object[] {PID, arrivalTime, burstTime});
-
-		organizeReadyQueue();
 
 	}
 
@@ -484,15 +448,13 @@ public class UI extends JFrame {
 
 			model.removeRow(model.getRowCount() - 1);
 
-		organizeReadyQueue();
-
 	}
 
 	/**
 	 * organizeReadyQueue
 	 */
 
-	private void organizeReadyQueue() {
+	private void organizeReadyQueue(History history) {
 
 		/*DefaultTableModel pModel = (DefaultTableModel) table.getModel();
 
@@ -516,6 +478,77 @@ public class UI extends JFrame {
 
 	}
 
+	/**
+	 * @param history
+	 */
+
+	private void drawGanttChart(History history, List<Core> coreList) {
+
+		System.out.println("-- Gantt");
+
+		System.out.print("       ");
+
+		for(int historyIndex = 0; historyIndex < history.getHistory().size(); historyIndex++)
+
+			System.out.printf("%4d ", historyIndex);
+
+		System.out.println();
+
+		for(int coreIndex = 0; coreIndex < coreList.size(); coreIndex++) {
+
+			System.out.printf("Core%2d", coreIndex + 1);
+
+			for(List<Process> pl : history.getHistory()) {
+
+				boolean worked = false;
+
+				for(Process p : pl)
+
+					if(p.getWorkingCoreIndex() == coreIndex) {
+
+						System.out.printf("%5d", p.getpId());
+
+						worked = true;
+
+					}
+
+				if(!worked)
+
+					System.out.printf("     ");
+
+			}
+
+			System.out.println();
+
+		}
+
+	}
+	
+	/**
+	 * @param processList
+	 */
+	
+	private void drawProcessStateChart(List<Process> processList) {
+		
+		System.out.println("-- Process State");
+
+		for(Process process : processList)
+
+			System.out.printf("P%02d\t%2d\t%2d\t%2d\t%2d\t%4.1f\n", process.getpId(), process.getArrivalTime(), process.getBurstTime(), process.getWaitingTime(), process.getTurnAroundTime(), process.getNormalizedTT());
+
+	}
+	
+	/**
+	 * @param history
+	 */
+	
+	private void drawTotalValues(History history) {
+		
+		System.out.println("-- Total");
+		System.out.printf("History.getTotalBurstTime(): %d\n", history.getTotalBurstTime());
+		System.out.printf("History.getTotalPowerConsumption(): %.1f\n", history.getTotalPoewrConsumption());
+		
+	}
 
 	/**
 	 * Run Scheduling
@@ -523,18 +556,86 @@ public class UI extends JFrame {
 
 	private void runScheduling() {
 
-		System.out.println("Start");
+		DefaultTableModel model = (DefaultTableModel) table.getModel();
+		model.setColumnIdentifiers(new String[] {"PID", "Arrival Time", "Burst Time"});
+		model.addRow(new Object[] {"P1", 0, 3});
+		model.addRow(new Object[] {"P2", 1, 7});
+		model.addRow(new Object[] {"P3", 3, 2});
+		model.addRow(new Object[] {"P4", 5, 5});
+		model.addRow(new Object[] {"P5", 6, 3});
+		
+		// 프로세스 리스트 생성
+		List<Process> processList = new ArrayList<Process>();
 
-		// drawGanttChart(new History());
+		for(int rowCount = 0; rowCount < table.getRowCount(); rowCount++)
 
+			processList.add(new Process(Integer.valueOf(table.getValueAt(rowCount, 0).toString().replace("P", "")), (int) table.getValueAt(rowCount, 1), (int) table.getValueAt(rowCount, 2)));
+
+		// 코어 리스트 생성
+		List<Core> coreList = new ArrayList<Core>();
+
+		for(int pCoreCount = 0; pCoreCount < Integer.valueOf(textField_4.getText()); pCoreCount++)
+
+			coreList.add(new PCore());
+
+		for(int eCoreCount = 0; eCoreCount < Integer.valueOf(textField_5.getText()); eCoreCount++)
+
+			coreList.add(new ECore());
+		
+		// 프로세스를 추가하지 않은 경우
+		if(processList.isEmpty()) {
+
+			JOptionPane.showMessageDialog(this , "프로세스를 추가하세요.");
+			return;
+
+		}
+		
+		// 히스토리 생성
+		History history = null;
+
+		if(fcfsRadioButton.isSelected())
+
+			history = new FCFS().schedule(processList, coreList);
+
+		else if(rrRadioButton.isSelected())
+
+			history = new RR().schedule(processList, coreList);
+
+		else if(spnRadioButton.isSelected())
+
+			history = new SPN().schedule(processList, coreList);
+
+		else if(srtnRadioButton.isSelected())
+
+			history = new SRTN().schedule(processList, coreList);
+
+		else if(hrrnRadioButton.isSelected())
+
+			history = new HRRN().schedule(processList, coreList);
+
+		else if(ownRadioButton.isSelected())
+
+			history = new OWN().schedule(processList, coreList);
+
+		// 스케줄링을 실패한 경우
+		if(history == null) {
+
+			JOptionPane.showMessageDialog(this, "스케줄링에 실패했습니다.");
+			return;
+
+		}
+
+		// 데이터 출력
+		System.out.println("-- Core");
+
+		for(Core core : coreList)
+
+			System.out.printf("Core %d\t%s\n", coreList.indexOf(core) + 1, core.getClass().getSimpleName());
+
+		drawGanttChart(history, coreList);
+		drawProcessStateChart(processList);
+		drawTotalValues(history);
+		
 	}
-
-	/**
-	 * @param history
-	 */
-
-	// private void drawGanttChart(History history) {
-
-	// }
 
 }
