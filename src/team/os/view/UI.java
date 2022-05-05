@@ -451,10 +451,11 @@ public class UI extends JFrame {
 	}
 
 	/**
-	 * organizeReadyQueue
+	 * @param history
+	 * @param time
 	 */
 
-	private void organizeReadyQueue(History history) {
+	private void organizeReadyQueue(History history, int time) {
 
 		/*DefaultTableModel pModel = (DefaultTableModel) table.getModel();
 
@@ -480,9 +481,13 @@ public class UI extends JFrame {
 
 	/**
 	 * @param history
+	 * @param time
 	 */
 
-	private void drawGanttChart(History history, List<Core> coreList) {
+	private void drawGanttChart(History history, List<Core> coreList, int time) {
+
+		// 간트 차트 배열을 생성한다.
+		Object[][] ganttChart = new Object[coreList.size()][time + 1];
 
 		System.out.println("-- Gantt");
 
@@ -498,23 +503,29 @@ public class UI extends JFrame {
 
 			System.out.printf("Core%2d", coreIndex + 1);
 
-			for(List<Process> pl : history.getHistory()) {
+			for(int t = 0; t < time; t++) {
 
-				boolean worked = false;
+				for(List<Process> pl : history.getHistory()) {
 
-				for(Process p : pl)
+					boolean worked = false;
 
-					if(p.getWorkingCoreIndex() == coreIndex) {
+					for(Process p : pl)
 
-						System.out.printf("%5d", p.getpId());
+						if(p.getWorkingCoreIndex() == coreIndex) {
 
-						worked = true;
+							System.out.printf("%5d", p.getpId());
 
-					}
+							ganttChart[coreIndex][t] = String.format("P%d", p.getpId());
 
-				if(!worked)
+							worked = true;
 
-					System.out.printf("     ");
+						}
+
+					if(!worked)
+
+						System.out.printf("     ");
+
+				}
 
 			}
 
@@ -522,14 +533,17 @@ public class UI extends JFrame {
 
 		}
 
+		table_2.setModel(new DefaultTableModel(ganttChart, new Object[history.getTotalBurstTime()]));
+
 	}
-	
+
 	/**
 	 * @param processList
+	 * @param time
 	 */
-	
-	private void drawProcessStateChart(List<Process> processList) {
-		
+
+	private void drawProcessStateChart(List<Process> processList, int time) {
+
 		System.out.println("-- Process State");
 
 		for(Process process : processList)
@@ -537,17 +551,18 @@ public class UI extends JFrame {
 			System.out.printf("P%02d\t%2d\t%2d\t%2d\t%2d\t%4.1f\n", process.getpId(), process.getArrivalTime(), process.getBurstTime(), process.getWaitingTime(), process.getTurnAroundTime(), process.getNormalizedTT());
 
 	}
-	
+
 	/**
 	 * @param history
+	 * @param time
 	 */
-	
-	private void drawTotalValues(History history) {
-		
+
+	private void drawTotalValues(History history, int time) {
+
 		System.out.println("-- Total");
 		System.out.printf("History.getTotalBurstTime(): %d\n", history.getTotalBurstTime());
 		System.out.printf("History.getTotalPowerConsumption(): %.1f\n", history.getTotalPoewrConsumption());
-		
+
 	}
 
 	/**
@@ -556,6 +571,7 @@ public class UI extends JFrame {
 
 	private void runScheduling() {
 
+		// temp
 		DefaultTableModel model = (DefaultTableModel) table.getModel();
 		model.setColumnIdentifiers(new String[] {"PID", "Arrival Time", "Burst Time"});
 		model.addRow(new Object[] {"P1", 0, 3});
@@ -563,7 +579,7 @@ public class UI extends JFrame {
 		model.addRow(new Object[] {"P3", 3, 2});
 		model.addRow(new Object[] {"P4", 5, 5});
 		model.addRow(new Object[] {"P5", 6, 3});
-		
+
 		// 프로세스 리스트 생성
 		List<Process> processList = new ArrayList<Process>();
 
@@ -581,7 +597,7 @@ public class UI extends JFrame {
 		for(int eCoreCount = 0; eCoreCount < Integer.valueOf(textField_5.getText()); eCoreCount++)
 
 			coreList.add(new ECore());
-		
+
 		// 프로세스를 추가하지 않은 경우
 		if(processList.isEmpty()) {
 
@@ -589,7 +605,7 @@ public class UI extends JFrame {
 			return;
 
 		}
-		
+
 		// 히스토리 생성
 		History history = null;
 
@@ -632,10 +648,37 @@ public class UI extends JFrame {
 
 			System.out.printf("Core %d\t%s\n", coreList.indexOf(core) + 1, core.getClass().getSimpleName());
 
-		drawGanttChart(history, coreList);
-		drawProcessStateChart(processList);
-		drawTotalValues(history);
+		// 히스토리 출력 쓰레드 정의
+		class drawThread extends Thread {
+
+			History history = null;
+
+			public drawThread(History history) {
+
+				this.history = history;
+
+			}
+
+			public void run() {
+
+				for(int t = 0; t < history.getTotalBurstTime(); t++) {
+
+					drawGanttChart(history, coreList, t);
+					drawProcessStateChart(processList, t);
+					drawTotalValues(history, t);
+
+					repaint();
+
+					try { Thread.sleep(100); } catch(Exception ex) { ex.printStackTrace(); }			
+
+				}
+
+			}
+
+		}
 		
+		new drawThread(history).start();
+
 	}
 
 }
