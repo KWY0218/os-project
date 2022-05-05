@@ -51,9 +51,10 @@ public class TestScheduling {
 
 		coreList.clear();
 		coreList.add(new ECore());
+		coreList.add(new PCore());
 
 		// 프로세스 및 코어 리스트를 출력한다.
-		History history = new SPN().schedule(processList, coreList);
+		History history = new HRRN().schedule(processList, coreList);
 
 		System.out.println("-- Core");
 

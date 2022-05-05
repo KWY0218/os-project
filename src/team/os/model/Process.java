@@ -121,7 +121,7 @@ public class Process implements Comparable<Object> {
 	 */
 	public void setAssignWaitingTime() {
 		assignWaitingTime++;
-		age = assignWaitingTime/burstTime;
+		age = (double) assignWaitingTime/burstTime;
 	}
 
 	@Override
