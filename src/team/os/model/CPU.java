@@ -1,15 +1,14 @@
 package team.os.model;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
+
+import team.os.enums.PriorityType;
 
 public class CPU {
 
 	public static final int MAX_CORE_SIZE = 4;
-	public static int TIME_QUANTUM = 4;
+	public static int timeQuantum = 1;
+	public static PriorityType priorityType = PriorityType.POWER;
 
 	/**
 	 * @param coreList
@@ -54,8 +53,7 @@ public class CPU {
 	 * @return Index of Recommended Core in CoreList
 	 */
 
-	// public static int getRecommendCore(List<Core> coreList, PriorityType schedulingType) {
-	public static int getRecommendCore(List<Core> coreList) {
+	public static int getRecommendCore(List<Core> coreList, PriorityType schedulingType) {
 
 		int locationOfFirst = -1;
 		int locationOfPCore = -1;
@@ -87,7 +85,7 @@ public class CPU {
 
 		}
 
-		/*if(schedulingType.equals(PriorityType.POWER) && locationOfPCore != -1)
+		if(schedulingType.equals(PriorityType.POWER) && locationOfPCore != -1)
 
 			location = locationOfPCore;
 
@@ -95,7 +93,7 @@ public class CPU {
 
 			location = locationOfECore;
 
-		else*/
+		else
 
 			location = locationOfFirst;
 
