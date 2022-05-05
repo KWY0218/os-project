@@ -10,8 +10,8 @@ import team.os.model.Core;
 import team.os.model.History;
 import team.os.model.Process;
 
-public class FCFS implements Scheduler{
-
+public class FCFS implements Scheduler {
+	
 	public History schedule(List<Process> processList, List<Core> coreList) {
 
 		double totalPowerConsumption = 0;
@@ -82,6 +82,9 @@ public class FCFS implements Scheduler{
 				// 사용 가능한 코어가 없으면 프로세스를 큐에 입력하고 컨티뉴한다.
 				if(coreIndex == -1) {
 
+					// 코어가 할당되지 않은 프로세스는 Waiting Time을 1증가한다.
+					process.setWaitingTime(process.getWaitingTime() + 1);
+
 					readyQueue.offer(process);
 					continue;
 
@@ -95,21 +98,17 @@ public class FCFS implements Scheduler{
 				process.setWorkingCoreIndex(coreIndex);
 				System.out.printf("Process P%d got Core %d.\n", process.getpId(), coreIndex);
 
-				System.out.printf("P%d -> %d - %d = ", process.getpId(), process.getRemainBurstTime(), core.getPower());
+				System.out.printf("P%d -> %d - %d = ", process.getpId(), process.getRemainBurstTime(), core.getPower(), Math.max(0, process.getRemainBurstTime() - core.getPower()));
 
 				// 프로세스의 남은 작업 시간을 코어의 파워만큼 감소한다.
 				process.setRemainBurstTime(process.getRemainBurstTime() - core.getPower());
 
-
-				System.out.println(process.getRemainBurstTime());
-
 				// 프로세스의 남은 작업시간이 0 이하라면
 				if(process.getRemainBurstTime() <= 0) {
-					
+
 					// 프로세스를 종료한다. 
 					process.setTerminated(true);
 					process.setTurnAroundTime(totalBurstTime - process.getArrivalTime());
-					process.setWaitingTime(process.getTurnAroundTime() - process.getBurstTime());
 					process.setNormalizedTT((double) process.getTurnAroundTime() / process.getBurstTime());
 
 					// 프로세스를 종료한다. 
