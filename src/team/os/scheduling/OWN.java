@@ -86,6 +86,11 @@ public class OWN implements Scheduler{
 
 				}
 
+			// ReadyQueue의 크기에 따라 timeQuantum을 재설정한다.
+			int timeQuantum = 3;
+			
+			timeQuantum = readyQueue.size();
+			
 			// 큐에 저장된 만큼 반복한다.
 			for(int processIndex = 0; processIndex < processQueueSize; processIndex++) {
 
@@ -147,7 +152,7 @@ public class OWN implements Scheduler{
 				else {
 
 					// 타임 퀀텀만큼 일을 했다면 일을 멈추고 Round-Robin Queue에 삽입한다.
-					if(CPU.timeQuantum <= process.getWorkingTimeOfTurn()) {
+					if(timeQuantum <= process.getWorkingTimeOfTurn()) {
 
 						roundRobinQueue.offer(process);
 
