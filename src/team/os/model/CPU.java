@@ -53,7 +53,7 @@ public class CPU {
 	 * @return Index of Recommended Core in CoreList
 	 */
 
-	public static int getRecommendCore(List<Core> coreList, PriorityType schedulingType) {
+	public static int getRecommendCore(List<Core> coreList, PriorityType schedulingType, int burstTime) {
 
 		int locationOfFirst = -1;
 		int locationOfPCore = -1;
@@ -85,16 +85,13 @@ public class CPU {
 
 		}
 
-		if(schedulingType.equals(PriorityType.POWER) && locationOfPCore != -1)
-
+		if(burstTime >= 4 && locationOfPCore != -1)
 			location = locationOfPCore;
 
-		else if(schedulingType.equals(PriorityType.POWER_CONSUMPTION) && locationOfECore != -1)
-
+		else if(burstTime < 4 && locationOfECore != -1)
 			location = locationOfECore;
 
 		else
-
 			location = locationOfFirst;
 
 		return location;
