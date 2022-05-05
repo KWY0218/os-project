@@ -44,16 +44,16 @@ public class TestScheduling {
 		// 예제 프로세스 및 코어
 		processList.clear();
 		processList.add(new Process(1, 0, 3));
-		processList.add(new Process(2, 1, 7));
-		processList.add(new Process(3, 3, 2));
-		processList.add(new Process(4, 5, 5));
-		processList.add(new Process(5, 6, 3));
+		processList.add(new Process(5, 1, 7));
+		processList.add(new Process(9, 3, 2));
+		processList.add(new Process(11, 5, 5));
+		processList.add(new Process(45, 6, 3));
 
 		coreList.clear();
 		coreList.add(new ECore());
 
 		// 프로세스 및 코어 리스트를 출력한다.
-		History history = new RR().schedule(processList, coreList);
+		History history = new HRRN().schedule(processList, coreList);
 
 		System.out.println("-- Core");
 
