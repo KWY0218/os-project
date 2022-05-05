@@ -7,7 +7,7 @@ import team.os.enums.PriorityType;
 public class CPU {
 
 	public static final int MAX_CORE_SIZE = 4;
-	public static int timeQuantum = 1;
+	public static int timeQuantum = 3;
 	public static PriorityType priorityType = PriorityType.POWER;
 
 	/**

@@ -107,6 +107,10 @@ public class SRTN  implements Scheduler{
 			// 7. 다시 readyList를 remainBT 순으로 정렬한다.
 			readyList.sort(Comparator.comparing(Process::getRemainBurstTime));
 			
+			for(Process process:readyList) process.setWaitingTime(process.getWaitingTime()+1);
+			// 10. 1초 시간을 증가한다.
+			currentTime++;
+			
 			// 8. 코어를 할당받은 프로세스들을 일시킨다.
 			for(Process process:mProcessList) {
 				// 8. 코어를 할당받은 프로세스들은 coreIndex가 있으므로 -1이 아닌 것은 할당받은 프로세스이다.
@@ -120,16 +124,12 @@ public class SRTN  implements Scheduler{
 						// 8. 프로세스가 종료 됐음을 명시하고, 일이 끝난 프로세스의 TT, WT, NTT를 설정한다.
 						process.setTerminated(true);
 						process.setTurnAroundTime(currentTime-process.getArrivalTime());
-						process.setWaitingTime(process.getTurnAroundTime()-process.getBurstTime());
-						process.setNormalizedTT(process.getTurnAroundTime()/process.getBurstTime());
+						process.setNormalizedTT((double) process.getTurnAroundTime()/process.getBurstTime());
 					}
 				}
 			}
 			// 9. 1초 동안의 변화를 보낸다.
 			history.addPage(mProcessList, readyList);
-			
-			// 10. 1초 시간을 증가한다.
-			currentTime++;
 			
 			// 11. 코어 할당이 끝난 후 일하고 있는 코어의 누적 전력량을 갱신한다.
 			totalAccConsumption += CPU.getPowerConsumptionOfCoreList(mCoreList);
