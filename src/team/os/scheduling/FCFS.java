@@ -71,7 +71,7 @@ public class FCFS implements Scheduler {
 				if((coreIndex = process.getWorkingCoreIndex()) == -1) {
 
 					// 코어를 추천받는다.
-					coreIndex = CPU.getRecommendCore(coreList, CPU.priorityType);
+					coreIndex = CPU.getRecommendCore(coreList, CPU.priorityType, process.getBurstTime());
 
 				} else {
 
