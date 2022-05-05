@@ -62,20 +62,20 @@ public class OWN implements Scheduler{
 
 				}
 
+			// timeQuantum = (Total BurstTime of Processes in ReadyQueue) / (Size of ReadyQueue)
+			int timeQuantum = 0;
+
+			// Time Quantum을 설정한다.
+			for(Process tProcess : readyQueue)
+
+				timeQuantum += tProcess.getRemainBurstTime();
+
+			timeQuantum /= readyQueue.size();
+
+			System.out.printf("timeQuantum = %d\n", timeQuantum);
+
 			// 큐에 저장된 만큼 반복한다.
 			for(int processIndex = 0; processIndex < processQueueSize; processIndex++) {
-
-				// timeQuantum = (Total BurstTime of Processes in ReadyQueue) / (Size of ReadyQueue)
-				int timeQuantum = 0;
-
-				// Time Quantum을 설정한다.
-				for(Process tProcess : readyQueue)
-
-					timeQuantum += tProcess.getRemainBurstTime();
-
-				timeQuantum /= readyQueue.size();
-
-				System.out.printf("timeQuantum = %d --------------\n", timeQuantum);
 
 				// 큐에서 프로세스를 선택한다.
 				Process process = readyQueue.poll();
@@ -84,16 +84,10 @@ public class OWN implements Scheduler{
 				int coreIndex = -1;
 
 				// 프로세스에 할당된 코어가 없다면
-				if((coreIndex = process.getWorkingCoreIndex()) == -1) {
+				if((coreIndex = process.getWorkingCoreIndex()) == -1)
 
 					// 코어를 추천받는다.
 					coreIndex = CPU.getRecommendCore(coreList);
-
-				} else {
-
-					System.out.printf("Process P%d have Core %d.\n", process.getpId(), coreIndex);
-
-				}
 
 				// 사용 가능한 코어가 없으면 프로세스를 큐에 입력하고 컨티뉴한다.
 				if(coreIndex == -1) {
@@ -109,7 +103,7 @@ public class OWN implements Scheduler{
 
 				// 프로세스에 코어 인덱스를 입력한다.
 				process.setWorkingCoreIndex(coreIndex);
-				System.out.printf("Process P%d got Core %d.\n", process.getpId(), coreIndex);
+				System.out.printf("Process P%d have Core %d.\n", process.getpId(), coreIndex);
 
 				System.out.printf("P%d -> %d - %d = ", process.getpId(), process.getRemainBurstTime(), core.getPower());
 
@@ -117,6 +111,20 @@ public class OWN implements Scheduler{
 				process.setRemainBurstTime(process.getRemainBurstTime() - core.getPower());
 
 				System.out.println(process.getRemainBurstTime());
+
+				// 타임 퀀텀만큼 일을 했다면 일을 멈추고 큐의 맨 뒤로 보낸다.
+				if(timeQuantum <= process.getWorkingTimeOfTurn()) {
+
+					// continue;
+					// System.out.println(process.getpId() + "가 타임 퀀텀 이상의 작업을 함.");
+					// process.setWorkingTimeOfTurn(0);
+					
+				}
+
+				// 이번 큐에서 일한 만큼 기록한다.
+				process.setWorkingTimeOfTurn(process.getWorkingTimeOfTurn() + core.getPower());
+
+				System.out.println(process.getWorkingTimeOfTurn());
 
 				// 프로세스의 남은 작업시간이 0 이하라면
 				if(process.getRemainBurstTime() <= 0) {
