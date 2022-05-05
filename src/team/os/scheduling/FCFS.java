@@ -1,17 +1,13 @@
 package team.os.scheduling;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
-import java.util.Random;
 
 import team.os.model.CPU;
 import team.os.model.Core;
-import team.os.model.ECore;
 import team.os.model.History;
-import team.os.model.PCore;
 import team.os.model.Process;
 
 public class FCFS implements Scheduler{
@@ -75,7 +71,7 @@ public class FCFS implements Scheduler{
 				if((coreIndex = process.getWorkingCoreIndex()) == -1) {
 
 					// 코어를 추천받는다.
-					coreIndex = CPU.getRecommendCore(coreList);
+					coreIndex = CPU.getRecommendCore(coreList, CPU.priorityType);
 
 				} else {
 
@@ -109,12 +105,7 @@ public class FCFS implements Scheduler{
 
 				// 프로세스의 남은 작업시간이 0 이하라면
 				if(process.getRemainBurstTime() <= 0) {
-
-					// 시간 정보를 기록한다.
-					process.setTurnAroundTime(totalBurstTime - process.getArrivalTime());
-					process.setWaitingTime(process.getTurnAroundTime() - process.getBurstTime());
-					process.setNormalizedTT((double) process.getTurnAroundTime() / process.getBurstTime());
-
+					
 					// 프로세스를 종료한다. 
 					process.setTerminated(true);
 					process.setTurnAroundTime(totalBurstTime - process.getArrivalTime());
@@ -149,113 +140,15 @@ public class FCFS implements Scheduler{
 			System.out.println();
 
 			// 히스토리를 추가한다.
-			history.addPage(processList, readyQueue);
+			history.addPage(processList, new ArrayList<Process>(readyQueue));
 
 		}
-
-		System.out.printf("Total Burst Time: %d\n", totalBurstTime);
-		System.out.printf("Total Power Consumption: %.1f\n\n", totalPowerConsumption);
 
 		// 히스토리에 시간 및 전력정보를 대입한다.
 		history.setTotalBurstTime(totalBurstTime);
 		history.setTotalPowerConsumption(totalPowerConsumption);
 
 		return history;
-
-	}
-	
-	public static void main(String[] args) {
-
-		// 프로세스 리스트를 생성한다.
-		List<Process> processList = new ArrayList<Process>();
-
-		for(int i = 0; i < 15; i++)
-
-			processList.add(new Process(processList.size() + 1, new Random().nextInt(15), new Random().nextInt(5) + 1));
-
-		// 프로세스 리스트를 정렬한다.
-		processList.sort(Comparator.naturalOrder());
-
-		// 코어 리스트를 생성한다.
-		List<Core> coreList = new LinkedList<Core>();
-
-		for(int i = 0; i < CPU.MAX_CORE_SIZE; i++)
-
-			// case 2는 disable
-			switch(new Random().nextInt(3)) {
-
-			case 0: coreList.add(new ECore()); break;
-			case 1: coreList.add(new PCore()); break;
-
-			}
-
-		// 예제 프로세스 및 코어
-//		processList.clear();
-//		processList.add(new Process(1, 0, 3));
-//		processList.add(new Process(2, 1, 7));
-//		processList.add(new Process(3, 3, 2));
-//		processList.add(new Process(4, 5, 5));
-//		processList.add(new Process(5, 6, 3));
-
-//		coreList.clear();
-//		coreList.add(new ECore());
-
-		// 프로세스 및 코어 리스트를 출력한다.
-		History history = new OWN().schedule(processList, coreList);
-
-		System.out.println("-------- Core --------");
-		
-		for(Core core : coreList)
-			
-			System.out.printf("%s\n", core.getClass().getName());
-		
-		System.out.println("-------- Process --------");
-		
-		for(Process process : processList)
-			
-			System.out.printf("P%02d\t%2d\t%2d\n", process.getpId(), process.getArrivalTime(), process.getBurstTime());
-
-		// 히스토리 테스트
-		System.out.println("-------- History --------");
-
-		System.out.print("       ");
-
-		for(int historyIndex = 0; historyIndex < history.getHistory().size(); historyIndex++)
-
-			System.out.printf("%4d ", historyIndex);
-
-		System.out.println();
-
-		for(int coreIndex = 0; coreIndex < coreList.size(); coreIndex++) {
-
-			System.out.printf("Core%2d", coreIndex + 1);
-
-			for(List<Process> pl : history.getHistory()) {
-
-				boolean worked = false;
-				
-				for(Process p : pl)
-
-					if(p.getWorkingCoreIndex() == coreIndex) {
-
-						System.out.printf("%5d", p.getpId());
-
-						worked = true;
-						
-					}
-				
-				if(!worked)
-					
-					System.out.printf("     ");
-				
-			}
-
-			System.out.println();
-
-		}
-
-
-		System.out.println("History.getTotalBurstTime(): " + history.getTotalBurstTime());
 
 	}
 
