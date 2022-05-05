@@ -1,17 +1,13 @@
 package team.os.scheduling;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
-import java.util.Random;
 
 import team.os.model.CPU;
 import team.os.model.Core;
-import team.os.model.ECore;
 import team.os.model.History;
-import team.os.model.PCore;
 import team.os.model.Process;
 
 public class OWN implements Scheduler{
@@ -27,6 +23,9 @@ public class OWN implements Scheduler{
 		// Ready Queue를 준비한다.
 		Queue<Process> readyQueue = new LinkedList<Process>();
 
+		// Round Robin을 위한 Queue를 준비한다.
+		Queue<Process> roundRobinQueue = new LinkedList<Process>();
+
 		// 모든 프로세스가 끝나지 않았다면
 		while(!CPU.isTerminatedAllProcess(processList)) {
 
@@ -40,16 +39,41 @@ public class OWN implements Scheduler{
 			// 수행 시간을 1초 증가한다.
 			System.out.printf("Total Burst Time: %d\n", totalBurstTime++);
 
-			// 큐가 변하기 때문에 크기를 미리 저장한다.
-			int processQueueSize = readyQueue.size();
+			// 라운드 로빈 큐에 프로세스가 있다면 Ready Queue의 맨 뒤에 삽입한다.
+			if(!roundRobinQueue.isEmpty()) {
 
-			System.out.print("Queue: {");
+				Queue<Process> tQueue = new LinkedList<Process>();
+
+				while(!readyQueue.isEmpty())
+
+					tQueue.offer(readyQueue.poll());
+
+				while(!tQueue.isEmpty())
+
+					readyQueue.offer(tQueue.poll());
+
+				while(!roundRobinQueue.isEmpty()) {
+
+					Process process = roundRobinQueue.poll();
+					coreList.get(process.getWorkingCoreIndex()).setWorking(false);
+					process.setWorkingCoreIndex(-1);
+					process.setWorkingTimeOfTurn(0);
+					readyQueue.offer(process);
+
+				}
+
+			}
+
+			System.out.print("ReadyQueue: {");
 
 			for(Process process : readyQueue)
 
 				System.out.printf("P%d, ", process.getpId());
 
 			System.out.println("}");
+
+			// 큐가 변하기 때문에 크기를 미리 저장한다.
+			int processQueueSize = readyQueue.size();
 
 			// 종료된 프로세스에 할당된 코어들을 휴식시킨다.
 			for(Process process : processList)
@@ -61,18 +85,6 @@ public class OWN implements Scheduler{
 					process.setWorkingCoreIndex(-1);
 
 				}
-
-			// timeQuantum = (Total BurstTime of Processes in ReadyQueue) / (Size of ReadyQueue)
-			int timeQuantum = 0;
-
-			// Time Quantum을 설정한다.
-			for(Process tProcess : readyQueue)
-
-				timeQuantum += tProcess.getRemainBurstTime();
-
-			timeQuantum /= readyQueue.size();
-
-			System.out.printf("timeQuantum = %d\n", timeQuantum);
 
 			// 큐에 저장된 만큼 반복한다.
 			for(int processIndex = 0; processIndex < processQueueSize; processIndex++) {
@@ -87,7 +99,7 @@ public class OWN implements Scheduler{
 				if((coreIndex = process.getWorkingCoreIndex()) == -1)
 
 					// 코어를 추천받는다.
-					coreIndex = CPU.getRecommendCore(coreList);
+					coreIndex = CPU.getRecommendCore(coreList, CPU.priorityType);
 
 				// 사용 가능한 코어가 없으면 프로세스를 큐에 입력하고 컨티뉴한다.
 				if(coreIndex == -1) {
@@ -112,27 +124,11 @@ public class OWN implements Scheduler{
 
 				System.out.println(process.getRemainBurstTime());
 
-				// 타임 퀀텀만큼 일을 했다면 일을 멈추고 큐의 맨 뒤로 보낸다.
-				if(timeQuantum <= process.getWorkingTimeOfTurn()) {
-
-					// continue;
-					// System.out.println(process.getpId() + "가 타임 퀀텀 이상의 작업을 함.");
-					// process.setWorkingTimeOfTurn(0);
-					
-				}
-
 				// 이번 큐에서 일한 만큼 기록한다.
 				process.setWorkingTimeOfTurn(process.getWorkingTimeOfTurn() + core.getPower());
 
-				System.out.println(process.getWorkingTimeOfTurn());
-
 				// 프로세스의 남은 작업시간이 0 이하라면
 				if(process.getRemainBurstTime() <= 0) {
-
-					// 시간 정보를 기록한다.
-					process.setTurnAroundTime(totalBurstTime - process.getArrivalTime());
-					process.setWaitingTime(process.getTurnAroundTime() - process.getBurstTime());
-					process.setNormalizedTT((double) process.getTurnAroundTime() / process.getBurstTime());
 
 					// 프로세스를 종료한다. 
 					process.setTerminated(true);
@@ -150,10 +146,21 @@ public class OWN implements Scheduler{
 				// 프로세스의 남은 작업시간이 1 이상이라면
 				else {
 
-					// 프로세스를 큐에 삽입한다.
-					readyQueue.offer(process);
+					// 타임 퀀텀만큼 일을 했다면 일을 멈추고 Round-Robin Queue에 삽입한다.
+					if(CPU.timeQuantum <= process.getWorkingTimeOfTurn()) {
 
-					System.out.printf("P%d is offered.\n", process.getpId());
+						roundRobinQueue.offer(process);
+
+						System.out.printf("P%d is offered into Round-Robin Queue.\n", process.getpId());
+
+					} else {
+
+						// 프로세스를 Ready Queue에 삽입한다.
+						readyQueue.offer(process);
+
+						System.out.printf("P%d is offered.\n", process.getpId());
+
+					}
 
 				}
 
@@ -165,116 +172,18 @@ public class OWN implements Scheduler{
 			// 총 소비전력에 대기전력을 증가한다.
 			totalPowerConsumption += CPU.getStandbyPowerOfCoreList(coreList);
 
+			// 히스토리를 추가한다.
+			history.addPage(processList, new ArrayList<Process>(readyQueue));
+
 			System.out.println();
 
-			// 히스토리를 추가한다.
-			history.addPage(processList, readyQueue);
-
 		}
-
-		System.out.printf("Total Burst Time: %d\n", totalBurstTime);
-		System.out.printf("Total Power Consumption: %.1f\n\n", totalPowerConsumption);
 
 		// 히스토리에 시간 및 전력정보를 대입한다.
 		history.setTotalBurstTime(totalBurstTime);
 		history.setTotalPowerConsumption(totalPowerConsumption);
 
 		return history;
-
-	}
-
-	public static void main(String[] args) {
-
-		// 프로세스 리스트를 생성한다.
-		List<Process> processList = new ArrayList<Process>();
-
-		for(int i = 0; i < 15; i++)
-
-			processList.add(new Process(processList.size() + 1, new Random().nextInt(15), new Random().nextInt(5) + 1));
-
-		// 프로세스 리스트를 정렬한다.
-		processList.sort(Comparator.naturalOrder());
-
-		// 코어 리스트를 생성한다.
-		List<Core> coreList = new LinkedList<Core>();
-
-		for(int i = 0; i < CPU.MAX_CORE_SIZE; i++)
-
-			// case 2는 disable
-			switch(new Random().nextInt(3)) {
-
-			case 0: coreList.add(new ECore()); break;
-			case 1: coreList.add(new PCore()); break;
-
-			}
-
-		// 예제 프로세스 및 코어
-		processList.clear();
-		processList.add(new Process(1, 0, 3));
-		processList.add(new Process(2, 1, 7));
-		processList.add(new Process(3, 3, 2));
-		processList.add(new Process(4, 5, 5));
-		processList.add(new Process(5, 6, 3));
-
-		coreList.clear();
-		coreList.add(new ECore());
-
-		// 프로세스 및 코어 리스트를 출력한다.
-		History history = new OWN().schedule(processList, coreList);
-
-		System.out.println("-------- Core --------");
-
-		for(Core core : coreList)
-
-			System.out.printf("%s\n", core.getClass().getName());
-
-		System.out.println("-------- Process --------");
-
-		for(Process process : processList)
-
-			System.out.printf("P%02d\t%2d\t%2d\n", process.getpId(), process.getArrivalTime(), process.getBurstTime());
-
-		// 히스토리 테스트
-		System.out.println("-------- History --------");
-
-		System.out.print("       ");
-
-		for(int historyIndex = 0; historyIndex < history.getHistory().size(); historyIndex++)
-
-			System.out.printf("%4d ", historyIndex);
-
-		System.out.println();
-
-		for(int coreIndex = 0; coreIndex < coreList.size(); coreIndex++) {
-
-			System.out.printf("Core%2d", coreIndex + 1);
-
-			for(List<Process> pl : history.getHistory()) {
-
-				boolean worked = false;
-
-				for(Process p : pl)
-
-					if(p.getWorkingCoreIndex() == coreIndex) {
-
-						System.out.printf("%5d", p.getpId());
-
-						worked = true;
-
-					}
-
-				if(!worked)
-
-					System.out.printf("     ");
-
-			}
-
-			System.out.println();
-
-		}
-
-
-		System.out.println("History.getTotalBurstTime(): " + history.getTotalBurstTime());
 
 	}
 
