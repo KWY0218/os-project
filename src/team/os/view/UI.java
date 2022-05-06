@@ -4,9 +4,16 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Toolkit;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.Font;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultListModel;
@@ -22,6 +29,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.ListModel;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
@@ -395,6 +403,8 @@ public class UI extends JFrame {
 		table.getTableHeader().setForeground(Color.WHITE);
 		scrollPane.setViewportView(table);
 		((DefaultTableCellRenderer) table.getDefaultRenderer(String.class)).setHorizontalAlignment(JLabel.CENTER);
+		((DefaultTableModel) table.getModel())
+				.setColumnIdentifiers(new String[] { "PID", "Arrival Time", "Burst Time" });
 
 		lblNewLabel_6 = new JLabel("Create Process");
 		lblNewLabel_6.setForeground(Color.WHITE);
@@ -410,7 +420,11 @@ public class UI extends JFrame {
 
 		table_1 = new JTable();
 		table_1.setForeground(Color.WHITE);
+		table_1.getTableHeader().setForeground(Color.WHITE);
 		scrollPane_1.setViewportView(table_1);
+		((DefaultTableCellRenderer) table_1.getDefaultRenderer(String.class)).setHorizontalAlignment(JLabel.CENTER);
+		((DefaultTableModel) table_1.getModel()).setColumnIdentifiers(new String[] { "PID", "Arrival Time",
+				"Burst Time", "Waiting Time", "Turnaround Time", "Normalized TT" });
 
 		scrollPane_2 = new JScrollPane();
 		scrollPane_2.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
@@ -422,6 +436,7 @@ public class UI extends JFrame {
 		table_2.setForeground(Color.WHITE);
 		table_2.getTableHeader().setForeground(Color.WHITE);
 		scrollPane_2.setViewportView(table_2);
+		table_2.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		((DefaultTableCellRenderer) table_2.getDefaultRenderer(String.class)).setHorizontalAlignment(JLabel.CENTER);
 
 		lblCoreSetting = new JLabel("Core Setting");
@@ -551,8 +566,10 @@ public class UI extends JFrame {
 		int burstTime = Integer.parseInt(burstTimeField.getText());
 
 		DefaultTableModel model = (DefaultTableModel) table.getModel();
-		model.setColumnIdentifiers(new String[] { "PID", "Arrival Time", "Burst Time" });
-		model.addRow(new Object[] { PID, arrivalTime, burstTime });
+		// model.setColumnIdentifiers(new String[] { "PID", "Arrival Time", "Burst Time"
+		// });
+		if (model.getRowCount() < 15)
+			model.addRow(new Object[] { PID, arrivalTime, burstTime });
 	}
 
 	/**
@@ -562,11 +579,14 @@ public class UI extends JFrame {
 	private void resetProcess() {
 
 		DefaultTableModel model = (DefaultTableModel) table.getModel();
+		DefaultTableModel model1 = (DefaultTableModel) table_1.getModel();
+		DefaultTableModel model2 = (DefaultTableModel) table_2.getModel();
 
-		while (model.getRowCount() > 0)
-
-			model.removeRow(model.getRowCount() - 1);
-
+		// while (model.getRowCount() > 0)
+		// model.removeRow(model.getRowCount() - 1);
+		model.setRowCount(0);
+		model1.setRowCount(0);
+		model2.setRowCount(0);
 	}
 
 	/**
@@ -574,80 +594,84 @@ public class UI extends JFrame {
 	 * @param time
 	 */
 
-	private void organizeReadyQueue(History history, int time) {
-
-		/*
-		 * DefaultTableModel pModel = (DefaultTableModel) table.getModel();
-		 * 
-		 * List<Process> processList = new ArrayList<Process>();
-		 * 
-		 * for(int row = 0; row < pModel.getRowCount(); row++)
-		 * 
-		 * processList.add(new Process((String) pModel.getValueAt(row, 0), (int)
-		 * pModel.getValueAt(row, 1), (int) pModel.getValueAt(row, 2)));
-		 * 
-		 * // 프로세스 목록을 Arrival Time순으로 정리한다. -> 추후 table의 데이터로만 계산하기로 수정할 것.
-		 * processList.sort(Comparator.naturalOrder());
-		 * 
-		 * // Ready Queue에 입력한다. DefaultListModel<String> rqModel =
-		 * (DefaultListModel<String>) list_1.getModel();
-		 * 
-		 * rqModel.clear();
-		 * 
-		 * for(Process process : processList)
-		 * 
-		 * rqModel.addElement(process.getPID());
-		 */
-
-	}
+	/*
+	 * private void organizeReadyQueue(History history, int time) {
+	 * 
+	 * 
+	 * DefaultTableModel pModel = (DefaultTableModel) table.getModel();
+	 * 
+	 * List<Process> processList = new ArrayList<Process>();
+	 * 
+	 * for(int row = 0; row < pModel.getRowCount(); row++)
+	 * 
+	 * processList.add(new Process((int) pModel.getValueAt(row, 0),
+	 * (int)pModel.getValueAt(row, 1), (int) pModel.getValueAt(row, 2)));
+	 * 
+	 * // 프로세스 목록을 Arrival Time순으로 정리한다. -> 추후 table의 데이터로만 계산하기로 수정할 것.
+	 * processList.sort(Comparator.naturalOrder());
+	 * 
+	 * // Ready Queue에 입력한다. DefaultListModel<String> rqModel =
+	 * (DefaultListModel<String>) list_1.getModel();
+	 * 
+	 * rqModel.clear();
+	 * 
+	 * for(Process process : processList)
+	 * 
+	 * rqModel.addElement(process.getpId());
+	 * 
+	 * 
+	 * }
+	 */
 
 	/**
 	 * @param history
 	 * @param time
 	 */
+
+	private void drawReadyQueue(History history, int time) {
+		Queue<Process> tempProcessList = history.getReadyQueue().get(time);
+		DefaultListModel<String> rqModel = (DefaultListModel<String>) list_1.getModel();
+		rqModel.clear();
+		for (Process process : tempProcessList) {
+			rqModel.addElement("P" + Integer.toString(process.getpId()));
+		}
+		list_1.setModel(rqModel);
+	}
 
 	private void drawGanttChart(History history, List<Core> coreList, int time) {
+		final boolean[] flag = { true };
 
 		// 간트 차트 배열을 생성한다.
 		Object[][] ganttChart = new Object[coreList.size()][time + 1];
 
-		System.out.println("-- Gantt");
-
-		System.out.print("       ");
+//		System.out.println("-- Gantt");
+//
+//		System.out.print("       ");
 
 		for (int historyIndex = 0; historyIndex < history.getHistory().size(); historyIndex++)
 
-			System.out.printf("%4d ", historyIndex);
-
-		System.out.println();
+//			System.out.printf("%4d ", historyIndex);
+//
+//		System.out.println();
 
 		for (int coreIndex = 0; coreIndex < coreList.size(); coreIndex++) {
+//			System.out.printf("Core%2d", coreIndex + 1);
 
-			System.out.printf("Core%2d", coreIndex + 1);
+			for (int t = 0; t < time + 1; t++) {
 
-			for (int t = 0; t < time; t++) {
+				boolean worked = false;
 
-				for (List<Process> pl : history.getHistory()) {
+				for (Process p : history.getHistory().get(t))
 
-					boolean worked = false;
+					if (p.getWorkingCoreIndex() == coreIndex) {
+//						System.out.printf("%5d", p.getpId());
+						ganttChart[coreIndex][t] = String.format("P%d", p.getpId());
+						worked = true;
+					}
 
-					for (Process p : pl)
+				if (!worked)
 
-						if (p.getWorkingCoreIndex() == coreIndex) {
-
-							System.out.printf("%5d", p.getpId());
-
-							ganttChart[coreIndex][t] = String.format("P%d", p.getpId());
-
-							worked = true;
-
-						}
-
-					if (!worked)
-
-						System.out.printf("     ");
-
-				}
+					System.out.printf("     ");
 
 			}
 
@@ -655,8 +679,44 @@ public class UI extends JFrame {
 
 		}
 
-		table_2.setModel(new DefaultTableModel(ganttChart, new Object[history.getTotalBurstTime()]));
+		String[] timeHeader = new String[time + 1];
+		for (int i = 0; i < time + 1; i++) {
+			timeHeader[i] = Integer.toString(i);
+		}
+		table_2.setModel(new DefaultTableModel(ganttChart, timeHeader));
+		scrollPane_2.getHorizontalScrollBar().addAdjustmentListener(new AdjustmentListener() {
+			@Override
+			public void adjustmentValueChanged(AdjustmentEvent e) {
+				if (flag[0])
+					e.getAdjustable().setValue(e.getAdjustable().getMaximum());
+			}
+		});
+		scrollPane_2.getHorizontalScrollBar().addMouseListener(new MouseListener() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				flag[0] = false;
+			}
 
+			@Override
+			public void mousePressed(MouseEvent e) {
+				flag[0] = false;
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				flag[0] = false;
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				flag[0] = false;
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				flag[0] = false;
+			}
+		});
 	}
 
 	/**
@@ -664,16 +724,19 @@ public class UI extends JFrame {
 	 * @param time
 	 */
 
-	private void drawProcessStateChart(List<Process> processList, int time) {
+	private void drawProcessStateChart(List<Process> processList) {
 
 		System.out.println("-- Process State");
 
 		for (Process process : processList)
-
 			System.out.printf("P%02d\t%2d\t%2d\t%2d\t%2d\t%4.1f\n", process.getpId(), process.getArrivalTime(),
 					process.getBurstTime(), process.getWaitingTime(), process.getTurnAroundTime(),
 					process.getNormalizedTT());
 
+		for (Process process : processList)
+			((DefaultTableModel) table_1.getModel())
+					.addRow(new Object[] { process.getpId(), process.getArrivalTime(), process.getBurstTime(),
+							process.getWaitingTime(), process.getTurnAroundTime(), process.getNormalizedTT() });
 	}
 
 	/**
@@ -686,7 +749,9 @@ public class UI extends JFrame {
 		System.out.println("-- Total");
 		System.out.printf("History.getTotalBurstTime(): %d\n", history.getTotalBurstTime());
 		System.out.printf("History.getTotalPowerConsumption(): %.1f\n", history.getTotalPoewrConsumption());
-
+		textField.setText(Integer.toString(history.getTotalBurstTime()));
+		textField_1.setText(Integer.toString(time + 1));
+		textField_2.setText(Double.toString(history.getTotalPoewrConsumption()));
 	}
 
 	/**
@@ -696,13 +761,13 @@ public class UI extends JFrame {
 	private void runScheduling() {
 
 		// temp
-		DefaultTableModel model = (DefaultTableModel) table.getModel();
-		model.setColumnIdentifiers(new String[] { "PID", "Arrival Time", "Burst Time" });
-		model.addRow(new Object[] { "P1", 0, 3 });
-		model.addRow(new Object[] { "P2", 1, 7 });
-		model.addRow(new Object[] { "P3", 3, 2 });
-		model.addRow(new Object[] { "P4", 5, 5 });
-		model.addRow(new Object[] { "P5", 6, 3 });
+//		DefaultTableModel model = (DefaultTableModel) table.getModel();
+//		model.setColumnIdentifiers(new String[] { "PID", "Arrival Time", "Burst Time" });
+//		model.addRow(new Object[] { "P1", 0, 3 });
+//		model.addRow(new Object[] { "P2", 1, 7 });
+//		model.addRow(new Object[] { "P3", 3, 2 });
+//		model.addRow(new Object[] { "P4", 5, 5 });
+//		model.addRow(new Object[] { "P5", 6, 3 });
 
 		// 프로세스 리스트 생성
 		List<Process> processList = new ArrayList<Process>();
@@ -710,7 +775,7 @@ public class UI extends JFrame {
 		for (int rowCount = 0; rowCount < table.getRowCount(); rowCount++)
 
 			processList.add(new Process(Integer.valueOf(table.getValueAt(rowCount, 0).toString().replace("P", "")),
-					(int) table.getValueAt(rowCount, 1), (int) table.getValueAt(rowCount, 2)));
+					(int) (table.getValueAt(rowCount, 1)), (int) (table.getValueAt(rowCount, 2))));
 
 		// 코어 리스트 생성
 		List<Core> coreList = new ArrayList<Core>();
@@ -767,11 +832,14 @@ public class UI extends JFrame {
 		}
 
 		// 데이터 출력
-		System.out.println("-- Core");
-
-		for (Core core : coreList)
-
-			System.out.printf("Core %d\t%s\n", coreList.indexOf(core) + 1, core.getClass().getSimpleName());
+		/*
+		 * System.out.println("-- Core");
+		 * 
+		 * for (Core core : coreList)
+		 * 
+		 * System.out.printf("Core %d\t%s\n", coreList.indexOf(core) + 1,
+		 * core.getClass().getSimpleName());
+		 */
 
 		// 히스토리 출력 쓰레드 정의
 		class drawThread extends Thread {
@@ -787,20 +855,19 @@ public class UI extends JFrame {
 			public void run() {
 
 				for (int t = 0; t < history.getTotalBurstTime(); t++) {
-
+					drawReadyQueue(history, t);
 					drawGanttChart(history, coreList, t);
-					drawProcessStateChart(processList, t);
 					drawTotalValues(history, t);
-
 					repaint();
-
 					try {
-						Thread.sleep(100);
+						Thread.sleep(500);
 					} catch (Exception ex) {
 						ex.printStackTrace();
 					}
 
 				}
+
+				drawProcessStateChart(processList);
 
 			}
 
