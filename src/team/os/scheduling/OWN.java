@@ -110,13 +110,13 @@ public class OWN implements Scheduler {
 				int coreIndex = -1;
 
 				// 프로세스에 할당된 코어가 없다면
-				if((coreIndex = process.getWorkingCoreIndex()) == -1)
+				if ((coreIndex = process.getWorkingCoreIndex()) == -1)
 
 					// 코어를 추천받는다.
 					coreIndex = CPU.getRecommendCore(coreList, CPU.priorityType);
 
 				// 사용 가능한 코어가 없으면 프로세스를 큐에 입력하고 컨티뉴한다.
-				if(coreIndex == -1) {
+				if (coreIndex == -1) {
 
 					// 코어가 할당되지 않은 프로세스는 Waiting Time을 1증가한다.
 					process.setWaitingTime(process.getWaitingTime() + 1);
@@ -135,7 +135,13 @@ public class OWN implements Scheduler {
 				System.out.printf("Process P%d have Core %d.\n", process.getpId(), coreIndex);
 
 				System.out.printf("P%d -> %d - %d = ", process.getpId(), process.getRemainBurstTime(), core.getPower(), Math.max(0, process.getRemainBurstTime() - core.getPower()));
+			}
+			for(Process process:processList){
+				int coreIndex = process.getWorkingCoreIndex();
+				if(coreIndex == -1)
+					continue;
 
+				Core core = coreList.get(coreIndex);
 				// 프로세스의 남은 작업 시간을 코어의 파워만큼 감소한다.
 				process.setRemainBurstTime(process.getRemainBurstTime() - core.getPower());
 
@@ -167,13 +173,6 @@ public class OWN implements Scheduler {
 
 						System.out.printf("P%d is offered into Round-Robin Queue.\n", process.getpId());
 
-					} else {
-
-						// 프로세스를 Ready Queue에 삽입한다.
-						readyQueue.offer(process);
-
-						System.out.printf("P%d is offered.\n", process.getpId());
-
 					}
 
 				}
@@ -200,5 +199,4 @@ public class OWN implements Scheduler {
 		return history;
 
 	}
-
 }
