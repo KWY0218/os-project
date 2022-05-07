@@ -794,7 +794,7 @@ public class UI extends JFrame {
       System.out.printf("History.getTotalPowerConsumption(): %.1f\n", history.getTotalPoewrConsumption());
       textField.setText(Integer.toString(history.getTotalBurstTime()));
       textField_1.setText(Integer.toString(time + 1));
-      textField_2.setText(Double.toString(history.getTotalPoewrConsumption()));
+      textField_2.setText(String.format("%.2f", history.getTotalPoewrConsumption()));
    }
 
    /**
