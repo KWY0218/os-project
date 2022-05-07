@@ -11,7 +11,7 @@ import team.os.model.History;
 import team.os.model.Process;
 
 public class FCFS implements Scheduler {
-	
+
 	public History schedule(List<Process> processList, List<Core> coreList) {
 
 		double totalPowerConsumption = 0;
@@ -68,7 +68,7 @@ public class FCFS implements Scheduler {
 				Process process = readyQueue.poll();
 
 				// 프로세스에 할당된 코어가 없다면
-				if((coreIndex = process.getWorkingCoreIndex()) == -1) {
+				if ((coreIndex = process.getWorkingCoreIndex()) == -1) {
 
 					// 코어를 추천받는다.
 					coreIndex = CPU.getRecommendCore(coreList, CPU.priorityType);
@@ -80,7 +80,7 @@ public class FCFS implements Scheduler {
 				}
 
 				// 사용 가능한 코어가 없으면 프로세스를 큐에 입력하고 컨티뉴한다.
-				if(coreIndex == -1) {
+				if (coreIndex == -1) {
 
 					// 코어가 할당되지 않은 프로세스는 Waiting Time을 1증가한다.
 					process.setWaitingTime(process.getWaitingTime() + 1);
@@ -99,7 +99,13 @@ public class FCFS implements Scheduler {
 				System.out.printf("Process P%d got Core %d.\n", process.getpId(), coreIndex);
 
 				System.out.printf("P%d -> %d - %d = ", process.getpId(), process.getRemainBurstTime(), core.getPower(), Math.max(0, process.getRemainBurstTime() - core.getPower()));
+			}
+			for(Process process:processList) {
+				int coreIndex = process.getWorkingCoreIndex();
+				if(coreIndex == -1)
+					continue;
 
+				Core core = coreList.get(coreIndex);
 				// 프로세스의 남은 작업 시간을 코어의 파워만큼 감소한다.
 				process.setRemainBurstTime(process.getRemainBurstTime() - core.getPower());
 
@@ -115,16 +121,6 @@ public class FCFS implements Scheduler {
 					process.setTerminated(true);
 
 					System.out.printf("P%d is terminated.\n", process.getpId());
-
-				}
-
-				// 프로세스의 남은 작업시간이 1 이상이라면
-				else {
-
-					// 프로세스를 큐에 삽입한다.
-					readyQueue.offer(process);
-
-					System.out.printf("P%d is offered.\n", process.getpId());
 
 				}
 
@@ -144,8 +140,10 @@ public class FCFS implements Scheduler {
 		}
 
 		// 히스토리에 시간 및 전력정보를 대입한다.
+		System.out.println("DEBUG");
 		history.setTotalBurstTime(totalBurstTime);
 		history.setTotalPowerConsumption(totalPowerConsumption);
+		System.out.println("GUBED");
 
 		return history;
 
