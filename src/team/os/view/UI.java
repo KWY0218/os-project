@@ -544,7 +544,7 @@ public class UI extends JFrame {
       textField_3.setBounds(1072, 161, 89, 26);
       contentPane.add(textField_3);
       textField_3.setForeground(Color.WHITE);
-      textField_3.setText("0");
+      textField_3.setText("3");
       textField_3.setHorizontalAlignment(SwingConstants.CENTER);
       textField_3.setColumns(10);
 
@@ -597,7 +597,6 @@ public class UI extends JFrame {
    }
 
    /**
-    * @param pidField
     * @param arrivalTimeField
     * @param burstTimeField
     */
@@ -764,7 +763,6 @@ public class UI extends JFrame {
 
    /**
     * @param processList
-    * @param time
     */
 
    private void drawProcessStateChart(List<Process> processList) {
@@ -848,13 +846,23 @@ public class UI extends JFrame {
       else if(PerformanceFirstButton.isSelected())
          CPU.priorityType = PriorityType.POWER;
 
+      try {
+         CPU.timeQuantum = Integer.parseInt(textField_3.getText());
+         if(CPU.timeQuantum <= 0)
+            throw new Exception();
+         System.out.println(CPU.timeQuantum);
+      }
+      catch (Exception e){
+         e.getStackTrace();
+         textField_3.setText("3");
+         JOptionPane.showMessageDialog(this, "올바른 타임퀀텀 값을 입력하세요.");
+         return;
+      }
       if (fcfsRadioButton.isSelected())
 
          history = new FCFS().schedule(processList, coreList);
 
       else if (rrRadioButton.isSelected()) {
-    	  CPU.timeQuantum = Integer.parseInt(textField_3.getText());
-          System.out.println(CPU.timeQuantum);
           history = new RR().schedule(processList, coreList);
       }
 
