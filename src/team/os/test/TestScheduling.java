@@ -16,7 +16,7 @@ import team.os.scheduling.*;
 
 public class TestScheduling {
 
-	public static void main(String[] args) {
+	private TestScheduling() {
 
 		for(int j = 0; j < 1000; j++) {
 
