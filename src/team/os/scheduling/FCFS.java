@@ -34,18 +34,11 @@ public class FCFS implements Scheduler {
 					readyQueue.offer(process);
 
 			// 수행 시간을 1초 증가한다.
-			System.out.printf("Total Burst Time: %d\n", totalBurstTime++);
+			totalBurstTime++;
 
 			// 큐가 변하기 때문에 크기를 미리 저장한다.
 			int processQueueSize = readyQueue.size();
 
-			System.out.print("Queue: {");
-
-			for(Process process : readyQueue)
-
-				System.out.printf("P%d, ", process.getpId());
-
-			System.out.println("}");
 
 			// 종료된 프로세스에 할당된 코어들을 휴식시킨다.
 			for(Process process : processList)
@@ -53,7 +46,6 @@ public class FCFS implements Scheduler {
 				if(process.isTerminated() && process.getWorkingCoreIndex() != -1) {
 
 					coreList.get(process.getWorkingCoreIndex()).setWorking(false);
-					System.out.printf("Core %d is relaxing.\n", process.getWorkingCoreIndex());
 					process.setWorkingCoreIndex(-1);
 
 				}
@@ -72,10 +64,6 @@ public class FCFS implements Scheduler {
 
 					// 코어를 추천받는다.
 					coreIndex = CPU.getRecommendCore(coreList, CPU.priorityType);
-
-				} else {
-
-					System.out.printf("Process P%d have Core %d.\n", process.getpId(), coreIndex);
 
 				}
 
@@ -96,16 +84,19 @@ public class FCFS implements Scheduler {
 
 				// 프로세스에 코어 인덱스를 입력한다.
 				process.setWorkingCoreIndex(coreIndex);
-				System.out.printf("Process P%d got Core %d.\n", process.getpId(), coreIndex);
-
-				System.out.printf("P%d -> %d - %d = ", process.getpId(), process.getRemainBurstTime(), core.getPower(), Math.max(0, process.getRemainBurstTime() - core.getPower()));
+				
 			}
+			
 			for(Process process:processList) {
+				
 				int coreIndex = process.getWorkingCoreIndex();
+				
 				if(coreIndex == -1)
+					
 					continue;
 
 				Core core = coreList.get(coreIndex);
+				
 				// 프로세스의 남은 작업 시간을 코어의 파워만큼 감소한다.
 				process.setRemainBurstTime(process.getRemainBurstTime() - core.getPower());
 
@@ -120,8 +111,6 @@ public class FCFS implements Scheduler {
 					// 프로세스를 종료한다. 
 					process.setTerminated(true);
 
-					System.out.printf("P%d is terminated.\n", process.getpId());
-
 				}
 
 			}
@@ -132,18 +121,14 @@ public class FCFS implements Scheduler {
 			// 총 소비전력에 대기전력을 증가한다.
 			totalPowerConsumption += CPU.getStandbyPowerOfCoreList(coreList);
 
-			System.out.println();
-
 			// 히스토리를 추가한다.
 			history.addPage(processList, new ArrayList<Process>(readyQueue));
 
 		}
 
 		// 히스토리에 시간 및 전력정보를 대입한다.
-		System.out.println("DEBUG");
 		history.setTotalBurstTime(totalBurstTime);
 		history.setTotalPowerConsumption(totalPowerConsumption);
-		System.out.println("GUBED");
 
 		return history;
 
