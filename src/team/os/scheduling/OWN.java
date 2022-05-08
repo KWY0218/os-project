@@ -113,7 +113,7 @@ public class OWN implements Scheduler {
 				if ((coreIndex = process.getWorkingCoreIndex()) == -1)
 
 					// 코어를 추천받는다.
-					coreIndex = CPU.getRecommendCore(coreList, CPU.priorityType);
+					coreIndex = CPU.getRecommendCore(coreList, CPU.priorityType, process.getBurstTime());
 
 				// 사용 가능한 코어가 없으면 프로세스를 큐에 입력하고 컨티뉴한다.
 				if (coreIndex == -1) {

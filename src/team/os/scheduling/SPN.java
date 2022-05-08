@@ -53,12 +53,13 @@ public class SPN  implements Scheduler{
 			}
 			
 			// 5. 코어가 남아있고 && readyList 안에 프로세스가 있다면 readyList 맨 앞에 있는 프로세스에 코어를 할당한다. 둘 중 하나가 false가 나올 때 까지 반복한다.
-			while(CPU.getRecommendCore(mCoreList,CPU.priorityType) != -1 && !readyList.isEmpty()) {
-				// 5. readyList 에서 BT가 가장 짧은 프로세스 
-				
+			while(CPU.getRecommendCore(mCoreList,CPU.priorityType, -1) != -1 && !readyList.isEmpty()) {
+				// 5. readyList 에서 BT가 가장 짧은 프로세스
+				Process process = readyList.get(0);
+
 				// 5. 코어가 남아있으니 코어를 추천받는다.
-				int coreIndex = CPU.getRecommendCore(mCoreList,CPU.priorityType);
-				
+				int coreIndex = CPU.getRecommendCore(mCoreList,CPU.priorityType, process.getBurstTime());
+
 				// 5. 코어를 할당 받은 프로세스의 할당 받은 코어의 인덱스를 설정하고,  working 중인 것을 명시한다. 
 				readyList.get(0).setWorkingCoreIndex(coreIndex);
 				mCoreList.get(coreIndex).setWorking(true);
